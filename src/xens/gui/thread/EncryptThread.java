@@ -1,5 +1,7 @@
 package xens.gui.thread;
 
+import xens.file.FileEncrypter;
+
 import javax.swing.*;
 import java.io.File;
 
@@ -33,6 +35,20 @@ public class EncryptThread extends Thread {
             JOptionPane.showMessageDialog(jf, "文件路径错误!", "错误",JOptionPane.WARNING_MESSAGE);
             return;
         }
-
+        //创建文件加密实例
+        FileEncrypter fileEncrypter = new FileEncrypter(consoleArea);
+        //设置加密中禁用按钮
+        btnEncrypt.setEnabled(false);
+        btnDecrypt.setEnabled(false);
+        try{
+            fileEncrypter.encrypt(file, encryptMethod.getSelectedIndex(),encryptKey.getText());
+        }catch (Exception e){
+            JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
+        }
+        //显示面板
+        JOptionPane.showMessageDialog(jf,"文件加密成功!","加密成功",JOptionPane.PLAIN_MESSAGE);
+        //设置按钮可用
+        btnEncrypt.setEnabled(true);
+        btnDecrypt.setEnabled(true);
     }
 }
