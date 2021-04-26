@@ -1,5 +1,7 @@
 package xens.gui;
 
+import xens.gui.thread.EncryptThread;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -285,7 +287,10 @@ public class MainFrame extends JFrame implements ActionListener{
         }else if (e.getSource() == btnDecryptFileChooser){ //当前触发的事件发起者是文件解密选择
 
         }else if (e.getSource() == btnEncrypt){//当前触发的事件发起者是文件加密按钮
-
+            //将方法选择框选中的加密方法转换为String类型
+            String.valueOf(encryptMethod.getSelectedItem());
+            //创建新的加密线程,并传入对应的信息,使用start()调用新线程
+            new EncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
         }else if(e.getSource() == btnDecrypt){//当前触发的事件发起者是文件解密按钮
 
         }

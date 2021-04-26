@@ -1,0 +1,38 @@
+package xens.gui.thread;
+
+import javax.swing.*;
+import java.io.File;
+
+public class EncryptThread extends Thread {
+    JFrame jf;//JFrame框架
+    JButton btnEncrypt;//加密按钮
+    JButton btnDecrypt;//解密按钮
+    JTextField encryptFilePath;//加密地址
+    JTextField encryptKey;//加密密钥
+    JComboBox<String> encryptMethod;//加密方法
+    JTextArea consoleArea;//输出域
+
+    public EncryptThread(JFrame jf,JButton btnEncrypt,JButton btnDecrypt, JTextField encryptFilePath,JTextField encryptKey,JComboBox<String> encryptMethod,JTextArea consoleArea){
+        this.jf = jf;
+        this.btnEncrypt = btnEncrypt;
+        this.btnDecrypt = btnDecrypt;
+        this.encryptFilePath = encryptFilePath;
+        this.consoleArea = consoleArea;
+        this.encryptKey = encryptKey;
+        this.encryptMethod = encryptMethod;
+        this.setName("Encrypt_Thread");
+    }
+
+    //创建线程类
+    public void run(){
+        //获取文件加密路径
+        String EncryptPath = encryptFilePath.getText();
+        //创建文件类
+        File file = new File(EncryptPath);
+        if(!file.exists() || !file.isFile()) {
+            JOptionPane.showMessageDialog(jf, "文件路径错误!", "错误",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+    }
+}
