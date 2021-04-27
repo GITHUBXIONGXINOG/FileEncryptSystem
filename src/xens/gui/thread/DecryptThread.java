@@ -27,7 +27,7 @@ public class DecryptThread extends Thread {
 
     //创建线程类
     public void run(){
-        //获取文件解密路径
+        //获取文件加密路径
         String EncryptPath = decryptFilePath.getText();
         //创建文件类
         File file = new File(EncryptPath);
@@ -41,7 +41,9 @@ public class DecryptThread extends Thread {
         btnEncrypt.setEnabled(false);
         btnDecrypt.setEnabled(false);
         try{
-            fileEncrypter.decrypt(file, decryptMethod.getSelectedIndex(),decryptKey.getText());
+//            fileEncrypter.decrypt(file, EncryptPath,decryptMethod.getSelectedIndex(),decryptKey.getText());
+            fileEncrypter.decrypt(file,decryptFilePath, decryptMethod.getSelectedIndex(),decryptKey.getText());
+
         }catch (Exception e){
             JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
         }

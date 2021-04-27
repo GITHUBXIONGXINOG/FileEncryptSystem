@@ -1,5 +1,6 @@
 package xens.file;
 
+import xens.Encrypt.EncryptDES;
 import xens.Encrypt.Encrypter;
 
 import javax.swing.*;
@@ -25,33 +26,55 @@ public class FileEncrypter {
         }
     }
 
-    public int encrypt(File file, int method, String key){
-        //获取加密文件父文件
-        File pFolder = file.getParentFile();
+    public int encrypt(File file,JTextField encryptFilePath, int method, String key){
+        String EncryptPath = encryptFilePath.getText();
+        //创建文件类
+//        File file = new File(EncryptPath);
+
         Date start = new Date();
         print("正在加密: "+ file.getName());
         try{
-            //读取文件
-            RandomAccessFile oRAF = new RandomAccessFile(file,"r");
             //文件名字拼接
-            File distFile = new File(pFolder,file.getName() + ".encrypt" );
+
+            //拆分地址
+            String[] pathArray = EncryptPath.split("\\.");
+            //存储地址到newPath
+            String newPath = pathArray[0];
+            //后缀
+            String suffix = pathArray[pathArray.length-1];
+            int num = 0;
+            int i = 1;
+            //当有多个.时,数组个数大于2
+            if (pathArray.length>2){
+                //赋值为超出2的个数
+                num = pathArray.length-2;
+                while (i<=num){
+                    newPath += "."+pathArray[i];
+                    i++;
+                }
+            }
+            //拼接文件名
+            newPath += "_encrypt." + suffix;
+            File outFile = new File(newPath);
             //如果当前加密文件存在,删除加密文件
-            if (distFile.exists()){
-                distFile.delete();
+            if (outFile.exists()){
+                outFile.delete();
             }
-            //写加密文件
-            RandomAccessFile wFile = new RandomAccessFile(distFile, "rw");
-            //逐字节加密
-            int content, cnt = 0, round = key.length();
-            //读取一字节,并移动指针
-            while ((content = oRAF.read())!= -1){
-//                wFile.write();
-               byte[] res = Encrypter.encrypt(content,method,key);
-                wFile.write(res);
+            switch(method){
+                case 0:
+                    EncryptDES encryptDES = new EncryptDES();
+                    encryptDES.encrypt(EncryptPath,newPath,key);
+
+                    break;
+                case 1:
+//                value = encryptAlgMultiple(content, key);
+                    break;
+                case 2:
+//                value = encryptAlgMove(content, key);
+                    break;
+                default:
+                    break;
             }
-            //关闭读写的文件
-            wFile.close();
-            oRAF.close();
             Date end = new Date();
             long duration = (end.getTime() - start.getTime());
             if (duration > 1000000) {
@@ -66,43 +89,41 @@ public class FileEncrypter {
         }
     }
 
-    public int decrypt(File file, int method, String key){
-        //获取解密文件父文件
+    public int decrypt(File file,JTextField decryptFilePath, int method, String key){
+        String decryptPath = decryptFilePath.getText();
+        //创建文件类
+//        File file = new File(EncryptPath);
+
+        //获取加密文件父文件
         File pFolder = file.getParentFile();
         Date start = new Date();
         print("正在解密: "+ file.getName());
         try{
-            //读取文件
-            RandomAccessFile oRAF = new RandomAccessFile(file,"r");
-            //文件名字拼接
-            File distFile = new File(pFolder,file.getName() + ".encrypt" );
-            //如果当前加密文件存在,删除加密文件
-            if (distFile.exists()){
-                distFile.delete();
+//            //读取文件
+//            RandomAccessFile oRAF = new RandomAccessFile(file,"r");
+//            //文件名字拼接
+//            File distFile = new File(pFolder,file.getName() + ".encrypt" );
+//            //如果当前加密文件存在,删除加密文件
+//            if (distFile.exists()){
+//                distFile.delete();
+//            }
+
+            int value;
+            switch(method){
+                case 0:
+                    EncryptDES decryptDES = new EncryptDES();
+                    decryptDES.decrypt(decryptPath,key);
+
+                    break;
+                case 1:
+//                value = encryptAlgMultiple(content, key);
+                    break;
+                case 2:
+//                value = encryptAlgMove(content, key);
+                    break;
+                default:
+                    break;
             }
-            //写加密文件
-            RandomAccessFile wFile = new RandomAccessFile(distFile, "rw");
-            //逐字节加密
-            int content,cn = 0;
-            int[] contentByte = new int[8];
-            while( (content = oRAF.read()) != -1)
-            {
-                if (cn<8){
-                    contentByte[cn] = content;
-                    cn++;
-//                    contentByte[cn] = (content.get);
-                }else {
-                   byte[] res = Encrypter.decrypt(intToByteArray(contentByte),method,key);
-                   wFile.write(res);
-                    contentByte =  new int[8];
-                    cn=0;
-                }
-//                byte[] res = Encrypter.decrypt(content,method,key);
-//                wFile.write(res);
-            }
-            //关闭读写的文件
-            wFile.close();
-            oRAF.close();
             Date end = new Date();
             long duration = (end.getTime() - start.getTime());
             if (duration > 1000000) {
@@ -116,12 +137,6 @@ public class FileEncrypter {
             return 0;//发生错误
         }
     }
-    public static byte[] intToByteArray(int i) {
-        byte[] result = new byte[4];
-        result[0] = (byte)((i >> 24) & 0xFF);
-        result[1] = (byte)((i >> 16) & 0xFF);
-        result[2] = (byte)((i >> 8) & 0xFF);
-        result[3] = (byte)(i & 0xFF);
-        return result;
-    }
+
+
 }

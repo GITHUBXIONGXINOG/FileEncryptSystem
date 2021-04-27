@@ -6,9 +6,9 @@ public class Encrypter {
         switch(method){
             case 0:
 //                value = encryptAlgAdd(content, key);
-                EncryptDES encryptDES = new EncryptDES(key);
+//                EncryptDES encryptDES = new EncryptDES(key);
 
-                value = encryptDES.encrypt(content);
+//                value = encryptDES.encrypt(content);
 
                 break;
             case 1:
@@ -28,9 +28,9 @@ public class Encrypter {
         switch(method){
             case 0:
 //                value = encryptAlgAdd(content, key);
-                EncryptDES encryptDES = new EncryptDES(key);
+                EncryptDES encryptDES = new EncryptDES();
 
-                value = encryptDES.decrypt(content);
+//                value = encryptDES.decrypt(content);
 
                 break;
             case 1:
