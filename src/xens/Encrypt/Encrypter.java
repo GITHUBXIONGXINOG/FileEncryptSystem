@@ -23,7 +23,7 @@ public class Encrypter {
         return value;
     }
 
-    public static  byte[] decrypt(int content, int method, String key) throws Exception {
+    public static  byte[] decrypt(byte[] content, int method, String key) throws Exception {
         byte[] value = new byte[0];
         switch(method){
             case 0:

@@ -83,12 +83,22 @@ public class FileEncrypter {
             //写加密文件
             RandomAccessFile wFile = new RandomAccessFile(distFile, "rw");
             //逐字节加密
-            int content, cnt = 0, round = key.length();
-            //读取一字节,并移动指针
-            while ((content = oRAF.read())!= -1){
-//                wFile.write();
-                byte[] res = Encrypter.decrypt(content,method,key);
-                wFile.write(res);
+            int content,cn = 0;
+            int[] contentByte = new int[8];
+            while( (content = oRAF.read()) != -1)
+            {
+                if (cn<8){
+                    contentByte[cn] = content;
+                    cn++;
+//                    contentByte[cn] = (content.get);
+                }else {
+                   byte[] res = Encrypter.decrypt(intToByteArray(contentByte),method,key);
+                   wFile.write(res);
+                    contentByte =  new int[8];
+                    cn=0;
+                }
+//                byte[] res = Encrypter.decrypt(content,method,key);
+//                wFile.write(res);
             }
             //关闭读写的文件
             wFile.close();
@@ -105,5 +115,13 @@ public class FileEncrypter {
         }catch (Exception e){
             return 0;//发生错误
         }
+    }
+    public static byte[] intToByteArray(int i) {
+        byte[] result = new byte[4];
+        result[0] = (byte)((i >> 24) & 0xFF);
+        result[1] = (byte)((i >> 16) & 0xFF);
+        result[2] = (byte)((i >> 8) & 0xFF);
+        result[3] = (byte)(i & 0xFF);
+        return result;
     }
 }

@@ -58,11 +58,11 @@ public class EncryptDES {
         result[3] = (byte)(i & 0xFF);
         return result;
     }
-    public byte[] decrypt(int content) throws Exception {
+    public byte[] decrypt(byte[] content) throws Exception {
         Cipher cipher = Cipher.getInstance("DES");
-        //init使用密钥初始化此密码
-        cipher.init(Cipher.ENCRYPT_MODE, this.key);
-        byte[] encrypted =  cipher.doFinal(intToByteArray(content));
+       //init使用密钥初始化此密码 DECRYPT_MODE解密模式
+        cipher.init(Cipher.DECRYPT_MODE, this.key);
+        byte[] encrypted =  cipher.doFinal(content);
         return encrypted;
 
     }
