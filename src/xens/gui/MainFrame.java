@@ -1,5 +1,6 @@
 package xens.gui;
 
+import xens.gui.thread.DecryptThread;
 import xens.gui.thread.EncryptThread;
 
 import javax.swing.*;
@@ -17,9 +18,9 @@ public class MainFrame extends JFrame implements ActionListener{
     //创建解密按钮
     JButton btnDecrypt = new JButton("解密");
     //创建加密文件选择按钮
-    JButton btnDecryptFileChooser = new JButton("...");
-    //创建解密文件选择按钮
     JButton btnEncryptFileChooser = new JButton("...");
+    //创建解密文件选择按钮
+    JButton btnDecryptFileChooser = new JButton("...");
     //创建加密解密方法数组
     String []methodList = {"DES","AES","SM4"};
     //创建加密方法下拉选择框
@@ -118,12 +119,12 @@ public class MainFrame extends JFrame implements ActionListener{
         this.add(encryptFilePath);
 
         //给加密文件选择按钮绑定监听
-        btnDecryptFileChooser.addActionListener(this);
+        btnEncryptFileChooser.addActionListener(this);
         //设置按钮大小
-        btnDecryptFileChooser.setPreferredSize(new Dimension(20,30));
-        btnDecryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.red));
+        btnEncryptFileChooser.setPreferredSize(new Dimension(20,30));
+        btnEncryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加加密文件选择按钮到窗口
-        this.add(btnDecryptFileChooser);
+        this.add(btnEncryptFileChooser);
 
         //创建加密方法标签
         JLabel method0 = new JLabel("加密方法:");
@@ -185,12 +186,12 @@ public class MainFrame extends JFrame implements ActionListener{
         this.add(decryptFilePath);
 
         //解密文件选择按钮绑定监听
-        btnEncryptFileChooser.addActionListener(this);
+        btnDecryptFileChooser.addActionListener(this);
         //解密文件选择按钮设置大小
-        btnEncryptFileChooser.setPreferredSize(new Dimension(20,30));
-        btnEncryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.red));
+        btnDecryptFileChooser.setPreferredSize(new Dimension(20,30));
+        btnDecryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
-        this.add(btnEncryptFileChooser);
+        this.add(btnDecryptFileChooser);
 
         //创建解密方法标签
         JLabel method1 = new JLabel("解密方法: ");
@@ -262,7 +263,7 @@ public class MainFrame extends JFrame implements ActionListener{
     //设置监听事件触发的方法
     public void actionPerformed(ActionEvent e){
         //当前触发的事件发起者是文件加密选择
-        if (e.getSource() == btnDecryptFileChooser){
+        if (e.getSource() == btnEncryptFileChooser){
             //创建文件选择器,不指定文件目录,默认为文档目录
             JFileChooser fileChooser = new JFileChooser();
             //设置JFileChooser窗口标题栏中的字符串。
@@ -285,13 +286,37 @@ public class MainFrame extends JFrame implements ActionListener{
                 }
             }
         }else if (e.getSource() == btnDecryptFileChooser){ //当前触发的事件发起者是文件解密选择
-
+            //创建文件选择器,不指定文件目录,默认为文档目录
+            JFileChooser fileChooser = new JFileChooser();
+            //设置JFileChooser窗口标题栏中的字符串。
+            fileChooser.setDialogTitle("请选择要解密的文件...");
+            //设置FileChooseUI中ApproveButton中使用的文本。
+            fileChooser.setApproveButtonText("确定");
+            fileChooser.showOpenDialog(this);// 显示打开的文件对话框
+            //f就是选中的文件
+            File f = fileChooser.getSelectedFile();// 使用文件类获取选择器选择的文件
+            if (f != null) {
+                String s = f.getAbsolutePath();// 返回路径名
+                //将文本加密标签,将当前的路径设置为文字内容
+                decryptFilePath.setText(s);
+                //设置输出文本域
+                consoleArea.setText("当前选择文件大小约");
+                if( f.length() > 1024 ) {
+                    consoleArea.append(f.length()/1024 + "KB\r\n");
+                }else {
+                    consoleArea.append(f.length() + "B\r\n");
+                }
+            }
         }else if (e.getSource() == btnEncrypt){//当前触发的事件发起者是文件加密按钮
             //将方法选择框选中的加密方法转换为String类型
             String.valueOf(encryptMethod.getSelectedItem());
             //创建新的加密线程,并传入对应的信息,使用start()调用新线程
             new EncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
         }else if(e.getSource() == btnDecrypt){//当前触发的事件发起者是文件解密按钮
+            //将方法选择框选中的加密方法转换为String类型
+            String.valueOf(encryptMethod.getSelectedItem());
+            //创建新的加密线程,并传入对应的信息,使用start()调用新线程
+            new DecryptThread(this,btnEncrypt,btnDecrypt,decryptFilePath,decryptKey,decryptMethod,consoleArea).start();
 
         }
     }
