@@ -148,7 +148,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建加密密钥输入标签
         encryptKey.setPreferredSize(new Dimension(130,30));
         //设置加密密钥默认文字内容
-        encryptKey.setText("3.141592653");
+        encryptKey.setText("1234567887654344");
         encryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加加密密钥输入标签到窗口
         this.add(encryptKey);
@@ -215,7 +215,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //设置界面密钥文本输入框大小
         decryptKey.setPreferredSize(new Dimension(130, 30));
         //设置解密密钥,默认内容
-        decryptKey.setText("3.141592653");
+        decryptKey.setText("1234567887654344");
         decryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
         this.add(decryptKey);

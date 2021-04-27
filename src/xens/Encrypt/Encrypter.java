@@ -1,7 +1,7 @@
 package xens.Encrypt;
 
 public class Encrypter {
-    public static  byte[] encrypt(int content, int method, String key) throws Exception {
+    public static  byte[] encrypt(String path,  int method, String key) throws Exception {
         byte[] value = new byte[0];
         switch(method){
             case 0:
