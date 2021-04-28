@@ -105,31 +105,32 @@ public class FileEncrypter {
         String newPath = "";
         Date start = new Date();
         print("正在解密: "+ file.getName());
+        //拆分地址
+        String[] pathArray = decryptPath.split("\\.");
+        //存储地址到newPath
+        newPath = pathArray[0];
+        //后缀
+        String suffix = pathArray[pathArray.length-1];
+        int num = 0;
+        int i = 1;
+        //当有多个.时,数组个数大于2
+        if (pathArray.length>2){
+            //赋值为超出2的个数
+            num = pathArray.length-2;
+            while (i<=num){
+                newPath += "."+pathArray[i];
+                i++;
+            }
+        }
+        //拼接文件名
+        newPath += "_decrypt." + suffix;
+        File outFile = new File(newPath);
+        //如果当前加密文件存在,删除加密文件
+        if (outFile.exists()){
+            outFile.delete();
+        }
+
         try{
-            //拆分地址
-            String[] pathArray = decryptPath.split("\\.");
-            //存储地址到newPath
-            newPath = pathArray[0];
-            //后缀
-            String suffix = pathArray[pathArray.length-1];
-            int num = 0;
-            int i = 1;
-            //当有多个.时,数组个数大于2
-            if (pathArray.length>2){
-                //赋值为超出2的个数
-                num = pathArray.length-2;
-                while (i<=num){
-                    newPath += "."+pathArray[i];
-                    i++;
-                }
-            }
-            //拼接文件名
-            newPath += "_decrypt." + suffix;
-            File outFile = new File(newPath);
-            //如果当前加密文件存在,删除加密文件
-            if (outFile.exists()){
-                outFile.delete();
-            }
 
              switch(method){
                 case 0:
@@ -146,7 +147,12 @@ public class FileEncrypter {
 //                value = encryptAlgMultiple(content, key);
                     EncryptAES encryptAES = new EncryptAES(key);
 //                    encryptAES.decrypt(decryptPath,newPath);
-                    AESFileOp(decryptPath,newPath,1,encryptAES);
+                    int resAESFileOp = AESFileOp(decryptPath,newPath,1,encryptAES);
+                    if (resAESFileOp==0){
+                        System.gc();
+                        outFile.delete();
+                        return 0;
+                    }
 
                     break;
                 case 2:
@@ -165,7 +171,8 @@ public class FileEncrypter {
             return 1;
 
         }catch (Exception e){
-
+            System.gc();
+            outFile.delete();
             return 0;//发生错误
 
         }
