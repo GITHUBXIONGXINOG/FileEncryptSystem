@@ -110,15 +110,18 @@ public class FileEncrypter {
             System.arraycopy(buffer,0,temp,0,r);
 //                out.write(aes(temp, Cipher.DECRYPT_MODE,this.secretKey));
             if (method==0){//加密
-                String encoded = Base64.getEncoder().encodeToString(temp);
-                byte[] res = encryptAES.encrypt(encoded);
+//                String encoded = Base64.getEncoder().encodeToString(temp);
+                byte[] res = encryptAES.encrypt(temp);
+
                 out.write(res);
+                out.flush();
             }else {//解密
 //                String strTemp = new String(temp,"UTF-8");
 //                byte[] decoded = Base64.getDecoder().decode(strTemp);
                byte[] res =  encryptAES.decrypt(temp);
-                byte[] decoded = Base64.getDecoder().decode(res);
-                out.write(decoded );
+//                byte[] decoded = Base64.getDecoder().decode(res);
+                out.write(res );
+                out.flush();
             }
 
 

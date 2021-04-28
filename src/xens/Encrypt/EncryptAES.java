@@ -1,11 +1,14 @@
 package xens.Encrypt;
 
 import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Random;
 
 public class EncryptAES {
     SecretKey secretKey;
@@ -29,15 +32,24 @@ public class EncryptAES {
     public static SecretKey generateKey(String strKey) throws NoSuchAlgorithmException {
         //要生成什么加密方式的key,生成aes的实例
         KeyGenerator secretGenerator = KeyGenerator.getInstance(ALGORITHM);
-        //随机数生成器 Random 每天可以生成864,000个
-        SecureRandom secureRandom = new SecureRandom();
+        //随机数生成器 Random
+        Random random = new Random();
+        Long longKey = Long.parseLong(strKey);
         //设置随机数种子
-        secureRandom.setSeed(strKey.getBytes());
+        random.setSeed(longKey);
+        byte[] buffer = new byte[16];
+        random.nextBytes(buffer);
         //对key进行初始化
-        secretGenerator.init(secureRandom);
+//        secretGenerator.init(random);
         //生成key
         SecretKey secretKey = secretGenerator.generateKey();
-        return secretKey;
+
+//        byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
+// rebuild key using SecretKeySpec
+        SecretKey originalKey = new SecretKeySpec(buffer, 0, buffer.length, "AES");
+        String encodedKey = Base64.getEncoder().encodeToString(originalKey.getEncoded());
+
+        return originalKey;
     }
     final static String charsetName = "UTF-8";
     //使用UTF8,避免中文
@@ -47,9 +59,12 @@ public class EncryptAES {
      * @param content 传入字符串
      * @return 返回加密后的byte数组
      */
-    public  byte[] encrypt(String content) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+    public  byte[] encrypt(byte[] content) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
+
+        String encodedKey = Base64.getEncoder().encodeToString(this.secretKey.getEncoded());
         //将content转为字节数组,模式为加密操作,密钥
-        return aes(content.getBytes(charset),Cipher.ENCRYPT_MODE,this.secretKey);
+        return aes(content,Cipher.ENCRYPT_MODE,this.secretKey);
+
     }
 
     /**
@@ -58,6 +73,7 @@ public class EncryptAES {
      * @return 返回解密后的字符串
      */
     public  byte[]  decrypt(byte[] contentArray) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException {
+        String encodedKey = Base64.getEncoder().encodeToString(this.secretKey.getEncoded());
         //使用字节数组接收aes返回值
         byte[] result = aes(contentArray,Cipher.DECRYPT_MODE,this.secretKey);
         return result;
@@ -76,7 +92,7 @@ public class EncryptAES {
         //对cipher进行初始化
         cipher.init(mode,secretKey);
         //数据小直接用doFinal,数据大时,循环,用update,再用doFinal
-        byte[] result = cipher.update(contentArray);
+        byte[] result = cipher.doFinal(contentArray);
         return result;
     }
 //    public static void main(String[] args){
