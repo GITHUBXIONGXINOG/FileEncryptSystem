@@ -5,6 +5,8 @@ import xens.gui.thread.EncryptThread;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -117,6 +119,42 @@ public class MainFrame extends JFrame implements ActionListener{
         //加密文件地址文本框
         encryptFilePath.setPreferredSize(new Dimension(220, 30));
         encryptFilePath.addFocusListener(new JTextFieldHintListener(encryptFilePath,"拖拽文件或点击...按钮选择文件"));
+        encryptFilePath.setTransferHandler(new TransferHandler(){
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean importData(JComponent comp, Transferable t) {
+                try {
+                    //获取拖拽的文件信息
+                    Object o = t.getTransferData(DataFlavor.javaFileListFlavor);
+                    //转为String,并取代[]
+                    String filepath = o.toString();
+                    if (filepath.startsWith("[")) {
+                        filepath = filepath.substring(1);
+                    }
+                    if (filepath.endsWith("]")) {
+                        filepath = filepath.substring(0, filepath.length() - 1);
+                    }
+                    System.out.println(filepath);
+                    //添加到文本框
+                    encryptFilePath.setText(filepath);
+                    return true;
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+            //拖拽文件触发,判断能否被导入
+            @Override
+            public boolean canImport(JComponent comp, DataFlavor[] flavors) {
+                for (int i = 0; i < flavors.length; i++) {
+                    if (DataFlavor.javaFileListFlavor.equals(flavors[i])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
         encryptFilePath.setBorder(BorderFactory.createLineBorder(Color.red));
 
         //添加文件地址文本框到窗口
@@ -188,6 +226,42 @@ public class MainFrame extends JFrame implements ActionListener{
         //设置解密文本输入框大小
         decryptFilePath.setPreferredSize(new Dimension(220,30));
         decryptFilePath.addFocusListener(new JTextFieldHintListener(decryptFilePath,"拖拽文件或点击...按钮选择文件"));
+        decryptFilePath.setTransferHandler(new TransferHandler(){
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean importData(JComponent comp, Transferable t) {
+                try {
+                    //获取拖拽的文件信息
+                    Object o = t.getTransferData(DataFlavor.javaFileListFlavor);
+                    //转为String,并取代[]
+                    String filepath = o.toString();
+                    if (filepath.startsWith("[")) {
+                        filepath = filepath.substring(1);
+                    }
+                    if (filepath.endsWith("]")) {
+                        filepath = filepath.substring(0, filepath.length() - 1);
+                    }
+                    System.out.println(filepath);
+                    //添加到文本框
+                    decryptFilePath.setText(filepath);
+                    return true;
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+            //拖拽文件触发,判断能否被导入
+            @Override
+            public boolean canImport(JComponent comp, DataFlavor[] flavors) {
+                for (int i = 0; i < flavors.length; i++) {
+                    if (DataFlavor.javaFileListFlavor.equals(flavors[i])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
         decryptFilePath.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
         this.add(decryptFilePath);
