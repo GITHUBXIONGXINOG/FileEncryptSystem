@@ -42,7 +42,7 @@ public class EncryptAES {
         //对key进行初始化
 //        secretGenerator.init(random);
         //生成key
-        SecretKey secretKey = secretGenerator.generateKey();
+//        SecretKey secretKey = secretGenerator.generateKey();
 
 //        byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
 // rebuild key using SecretKeySpec

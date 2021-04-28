@@ -119,6 +119,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //加密文件地址文本框
         encryptFilePath.setPreferredSize(new Dimension(220, 30));
         encryptFilePath.addFocusListener(new JTextFieldHintListener(encryptFilePath,"拖拽文件或点击...按钮选择文件"));
+        //添加拖拽
         encryptFilePath.setTransferHandler(new TransferHandler(){
             private static final long serialVersionUID = 1L;
             @Override
@@ -226,6 +227,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //设置解密文本输入框大小
         decryptFilePath.setPreferredSize(new Dimension(220,30));
         decryptFilePath.addFocusListener(new JTextFieldHintListener(decryptFilePath,"拖拽文件或点击...按钮选择文件"));
+        //添加拖拽
         decryptFilePath.setTransferHandler(new TransferHandler(){
             private static final long serialVersionUID = 1L;
             @Override
@@ -241,7 +243,6 @@ public class MainFrame extends JFrame implements ActionListener{
                     if (filepath.endsWith("]")) {
                         filepath = filepath.substring(0, filepath.length() - 1);
                     }
-                    System.out.println(filepath);
                     //添加到文本框
                     decryptFilePath.setText(filepath);
                     return true;

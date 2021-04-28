@@ -40,15 +40,21 @@ public class DecryptThread extends Thread {
         //设置加密中禁用按钮
         btnEncrypt.setEnabled(false);
         btnDecrypt.setEnabled(false);
+        int resIndex = 0;
         try{
 //            fileEncrypter.decrypt(file, EncryptPath,decryptMethod.getSelectedIndex(),decryptKey.getText());
-            fileEncrypter.decrypt(file,decryptFilePath, decryptMethod.getSelectedIndex(),decryptKey.getText());
-
+            resIndex = fileEncrypter.decrypt(file,decryptFilePath, decryptMethod.getSelectedIndex(),decryptKey.getText());
+            System.out.println(resIndex);
         }catch (Exception e){
             JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
         }
-        //显示面板
-        JOptionPane.showMessageDialog(jf,"文件解密成功!","解密成功",JOptionPane.PLAIN_MESSAGE);
+        if (resIndex == 1){//解密成功
+            //显示面板
+            JOptionPane.showMessageDialog(jf,"文件解密成功!","解密成功",JOptionPane.PLAIN_MESSAGE);
+        }else {
+            JOptionPane.showMessageDialog(jf,"文件解密出现错误,请检查密码...","解密错误",JOptionPane.WARNING_MESSAGE);
+        }
+
         //设置按钮可用
         btnEncrypt.setEnabled(true);
         btnDecrypt.setEnabled(true);
