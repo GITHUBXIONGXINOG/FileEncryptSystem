@@ -56,7 +56,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //设置窗口大小
         this.setSize(900,500);
         //设置窗口不能被用户调整大小
-        this.setResizable(false);
+//        this.setResizable(false);
         // 设置窗口相对于指定组件的位置,设置为null则窗口位于屏幕中央,
         this.setLocationRelativeTo(null);
         // 用户单击窗口的关闭按钮时程序执行的操作,参数为3时，表示关闭窗口则程序退出

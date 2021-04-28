@@ -59,8 +59,13 @@ public class FileEncrypter {
                     i++;
                 }
             }
+            String methodName="";
+            switch (method){
+                case 0: methodName="DES";break;
+                case 1: methodName="AES";break;
+            }
             //拼接文件名
-            newPath += "_encrypt." + suffix;
+            newPath += "_encrypted_"+methodName +'.'+ suffix;
             File outFile = new File(newPath);
             //如果当前加密文件存在,删除加密文件
             if (outFile.exists()){
@@ -68,15 +73,13 @@ public class FileEncrypter {
             }
             switch(method){
                 case 0:
-                    EncryptDES encryptDES = new EncryptDES();
-                    encryptDES.encrypt(EncryptPath,newPath,key);
+                    EncryptDES encryptDES = new EncryptDES(key);
+                    DESFileOp(EncryptPath,newPath,0,encryptDES);
+//                    encryptDES.encrypt(EncryptPath,newPath,key);
 
                     break;
                 case 1:
-//                value = encryptAlgMultiple(content, key);
-                    EncryptAES encryptAES = new EncryptAES(EncryptPath,key);
-//                    encryptAES.encrypt(EncryptPath,newPath);
-//                    Encrypter.encrypt(EncryptPath,)
+                    EncryptAES encryptAES = new EncryptAES(key);
                     AESFileOp(EncryptPath,newPath,0,encryptAES);
                     break;
                 default:
@@ -96,58 +99,6 @@ public class FileEncrypter {
         }catch (Exception e){
             return 0;//发生错误
         }
-    }
-
-    private int AESFileOp(String encryptPath, String newPath, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
-        InputStream is = new FileInputStream(encryptPath);
-        OutputStream out = new FileOutputStream(newPath);
-        String saveMD5;
-        int r;
-        if (method==0) {//加密
-            //计算文件MD5
-            String fileMd5 = MD5Util.md5HashCode(encryptPath);
-            //写入文件MD5信息
-            byte[] enMD5 = encryptAES.encrypt(fileMd5.getBytes());
-            out.write(enMD5);
-            out.flush();
-
-            byte[] buffer = new byte[1024];
-            while ((r = is.read(buffer)) > 0) {
-                byte[] temp = new byte[r];
-                System.arraycopy(buffer,0,temp,0,r);
-                    byte[] res = encryptAES.encrypt(temp);
-                    out.write(res);
-                    out.flush();
-            }
-        }else {//解密
-            byte[] buffer = new byte[1040];
-            byte[] md5Buffer = new byte[48];
-            is.read(md5Buffer);
-            saveMD5 =  new String(encryptAES.decrypt(md5Buffer));
-            while ((r = is.read(buffer)) > 0) {
-                byte[] temp = new byte[r];
-                System.arraycopy(buffer,0,temp,0,r);
-
-                byte[] res =  encryptAES.decrypt(temp);
-                out.write(res );
-                out.flush();
-
-            }
-            print("解密操作完成");
-            print("正在比对文件MD5...");
-            print("文件保存MD5: "+ saveMD5);
-            //计算文件MD5
-            String fileMd5 = MD5Util.md5HashCode(newPath);
-            print("当前解密文件MD5: "+fileMd5);
-            if (saveMD5.equals(fileMd5)){
-                print("MD5比对成功!文件为原始文件");
-            }else {
-                print("MD5比对失败!文件被修改!!!");
-            }
-        }
-//            byte[] buffer = new byte[1024];
-
-        return 1;
     }
 
     public int decrypt(File file,JTextField decryptFilePath, int method, String key){
@@ -183,13 +134,16 @@ public class FileEncrypter {
 
              switch(method){
                 case 0:
-                    EncryptDES decryptDES = new EncryptDES();
-                    decryptDES.decrypt(decryptPath,key);
-
+                    EncryptDES decryptDES = new EncryptDES(key);
+//                    decryptDES.decrypt(decryptPath,key);
+                    int resDESFileOp =  DESFileOp(decryptPath,newPath,1,decryptDES);
+                    if (resDESFileOp==0){
+                        return 0;
+                    }
                     break;
                 case 1:
 //                value = encryptAlgMultiple(content, key);
-                    EncryptAES encryptAES = new EncryptAES(newPath,key);
+                    EncryptAES encryptAES = new EncryptAES(key);
 //                    encryptAES.decrypt(decryptPath,newPath);
                     AESFileOp(decryptPath,newPath,1,encryptAES);
 
@@ -212,6 +166,134 @@ public class FileEncrypter {
         }catch (Exception e){
             return 0;//发生错误
         }
+    }
+
+    private int AESFileOp(String encryptPath, String newPath, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
+        InputStream is = new FileInputStream(encryptPath);
+        OutputStream out = new FileOutputStream(newPath);
+        String saveMD5;
+        int r;
+        if (method==0) {//加密
+            //计算文件MD5
+            String fileMd5 = MD5Util.md5HashCode(encryptPath);
+            //写入文件MD5信息
+            byte[] enMD5 = encryptAES.encrypt(fileMd5.getBytes());
+            out.write(enMD5);
+            out.flush();
+
+            byte[] buffer = new byte[1024];
+            while ((r = is.read(buffer)) > 0) {
+                byte[] temp = new byte[r];
+                System.arraycopy(buffer,0,temp,0,r);
+                byte[] res = encryptAES.encrypt(temp);
+                out.write(res);
+                out.flush();
+            }
+        }else {//解密
+            byte[] buffer = new byte[1040];
+            byte[] md5Buffer = new byte[48];
+            is.read(md5Buffer);
+            saveMD5 =  new String(encryptAES.decrypt(md5Buffer));
+            while ((r = is.read(buffer)) > 0) {
+                byte[] temp = new byte[r];
+                System.arraycopy(buffer,0,temp,0,r);
+
+                byte[] res =  encryptAES.decrypt(temp);
+                out.write(res );
+                out.flush();
+
+            }
+            print("解密操作完成");
+            print("正在比对文件MD5...");
+            print("文件保存MD5: "+ saveMD5);
+            //计算文件MD5
+            String fileMd5 = MD5Util.md5HashCode(newPath);
+            print("当前解密文件MD5: "+fileMd5);
+            if (saveMD5.equals(fileMd5)){
+                print("MD5比对成功!文件为原始文件");
+            }else {
+                print("MD5比对失败!文件被修改!!!");
+            }
+        }
+//            byte[] buffer = new byte[1024];
+
+        return 1;
+    }
+
+    private int DESFileOp(String encryptPath, String newPath, int method, EncryptDES encryptDES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
+//        InputStream is = new FileInputStream(encryptPath);
+//        OutputStream out = new FileOutputStream(newPath);
+        String saveMD5;
+        int r;
+        if (method==0) {//加密
+            try {
+                print("正在使用DES加密...");
+                int encryptIndex = encryptDES.encrypt(encryptPath,newPath);
+//                print(encryptDES.getMD5());
+                if (encryptIndex==1){
+                    print("文件加密完成");
+                }
+            } catch (Exception e) {
+                print("文件加密失败");
+                e.printStackTrace();
+            }
+//            //计算文件MD5
+//            String fileMd5 = MD5Util.md5HashCode(encryptPath);
+//            //写入文件MD5信息
+//            byte[] enMD5 = encryptDES.encrypt(fileMd5.getBytes());
+//            out.write(enMD5);
+//            out.flush();
+//
+//            byte[] buffer = new byte[1024];
+//            while ((r = is.read(buffer)) > 0) {
+//                byte[] temp = new byte[r];
+//                System.arraycopy(buffer,0,temp,0,r);
+//                byte[] res = encryptAES.encrypt(temp);
+//                out.write(res);
+//                out.flush();
+//            }
+        }else {//解密
+            print("正在使用DES解密...");
+            try {
+                int encryptIndex = encryptDES.decrypt(encryptPath,newPath);
+                if (encryptIndex==1){
+                    print("解密操作完成");
+                    print("正在比对文件MD5...");
+                    saveMD5 = encryptDES.getSaveMD5();
+                    print("文件保存MD5: "+ saveMD5);
+                    //计算文件MD5
+                    String fileMd5 = MD5Util.md5HashCode(newPath);
+                    print("当前解密文件MD5: "+fileMd5);
+                    if (saveMD5.equals(fileMd5)){
+                        print("MD5比对成功!文件为原始文件");
+                    }else {
+                        print("MD5比对失败!文件被修改!!!");
+                    }
+                }
+            } catch (Exception e) {
+                return 0;
+//                e.printStackTrace();
+            }
+
+//            byte[] buffer = new byte[1040];
+//            byte[] md5Buffer = new byte[48];
+//            is.read(md5Buffer);
+//            saveMD5 =  new String(encryptAES.decrypt(md5Buffer));
+//            while ((r = is.read(buffer)) > 0) {
+//                byte[] temp = new byte[r];
+//                System.arraycopy(buffer,0,temp,0,r);
+//
+//                byte[] res =  encryptAES.decrypt(temp);
+//                out.write(res );
+//                out.flush();
+//
+//            }
+
+
+        }
+//            byte[] buffer = new byte[1024];
+
+        return 1;
     }
 
 

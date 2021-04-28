@@ -28,7 +28,7 @@ public class Encrypter {
         switch(method){
             case 0:
 //                value = encryptAlgAdd(content, key);
-                EncryptDES encryptDES = new EncryptDES();
+//                EncryptDES encryptDES = new EncryptDES();
 
 //                value = encryptDES.decrypt(content);
 

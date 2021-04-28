@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class EncryptAES {
     SecretKey secretKey;
-    public EncryptAES(String content,String strKey){
+    public EncryptAES(String strKey){
 
             //初始化
         try {
