@@ -42,9 +42,8 @@ public class DecryptThread extends Thread {
         btnDecrypt.setEnabled(false);
         int resIndex = 0;
         try{
-//            fileEncrypter.decrypt(file, EncryptPath,decryptMethod.getSelectedIndex(),decryptKey.getText());
             resIndex = fileEncrypter.decrypt(file,decryptFilePath, decryptMethod.getSelectedIndex(),decryptKey.getText());
-            System.out.println(resIndex);
+//            System.out.println(resIndex);
         }catch (Exception e){
             JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
         }

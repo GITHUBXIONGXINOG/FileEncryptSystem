@@ -75,7 +75,6 @@ public class FileEncrypter {
                 case 0:
                     EncryptDES encryptDES = new EncryptDES(key);
                     DESFileOp(EncryptPath,newPath,0,encryptDES);
-//                    encryptDES.encrypt(EncryptPath,newPath,key);
 
                     break;
                 case 1:
@@ -103,14 +102,14 @@ public class FileEncrypter {
 
     public int decrypt(File file,JTextField decryptFilePath, int method, String key){
         String decryptPath = decryptFilePath.getText();
-
+        String newPath = "";
         Date start = new Date();
         print("正在解密: "+ file.getName());
         try{
             //拆分地址
             String[] pathArray = decryptPath.split("\\.");
             //存储地址到newPath
-            String newPath = pathArray[0];
+            newPath = pathArray[0];
             //后缀
             String suffix = pathArray[pathArray.length-1];
             int num = 0;
@@ -125,7 +124,7 @@ public class FileEncrypter {
                 }
             }
             //拼接文件名
-            newPath += "_encrypt." + suffix;
+            newPath += "_decrypt." + suffix;
             File outFile = new File(newPath);
             //如果当前加密文件存在,删除加密文件
             if (outFile.exists()){
@@ -138,6 +137,8 @@ public class FileEncrypter {
 //                    decryptDES.decrypt(decryptPath,key);
                     int resDESFileOp =  DESFileOp(decryptPath,newPath,1,decryptDES);
                     if (resDESFileOp==0){
+                        System.gc();
+                        outFile.delete();
                         return 0;
                     }
                     break;
@@ -164,7 +165,9 @@ public class FileEncrypter {
             return 1;
 
         }catch (Exception e){
+
             return 0;//发生错误
+
         }
     }
 
@@ -221,15 +224,13 @@ public class FileEncrypter {
     }
 
     private int DESFileOp(String encryptPath, String newPath, int method, EncryptDES encryptDES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
-//        InputStream is = new FileInputStream(encryptPath);
-//        OutputStream out = new FileOutputStream(newPath);
+
         String saveMD5;
         int r;
         if (method==0) {//加密
             try {
                 print("正在使用DES加密...");
                 int encryptIndex = encryptDES.encrypt(encryptPath,newPath);
-//                print(encryptDES.getMD5());
                 if (encryptIndex==1){
                     print("文件加密完成");
                 }
@@ -237,21 +238,7 @@ public class FileEncrypter {
                 print("文件加密失败");
                 e.printStackTrace();
             }
-//            //计算文件MD5
-//            String fileMd5 = MD5Util.md5HashCode(encryptPath);
-//            //写入文件MD5信息
-//            byte[] enMD5 = encryptDES.encrypt(fileMd5.getBytes());
-//            out.write(enMD5);
-//            out.flush();
-//
-//            byte[] buffer = new byte[1024];
-//            while ((r = is.read(buffer)) > 0) {
-//                byte[] temp = new byte[r];
-//                System.arraycopy(buffer,0,temp,0,r);
-//                byte[] res = encryptAES.encrypt(temp);
-//                out.write(res);
-//                out.flush();
-//            }
+
         }else {//解密
             print("正在使用DES解密...");
             try {
@@ -271,30 +258,15 @@ public class FileEncrypter {
                     }
                 }
             } catch (Exception e) {
+
                 return 0;
-//                e.printStackTrace();
             }
 
-//            byte[] buffer = new byte[1040];
-//            byte[] md5Buffer = new byte[48];
-//            is.read(md5Buffer);
-//            saveMD5 =  new String(encryptAES.decrypt(md5Buffer));
-//            while ((r = is.read(buffer)) > 0) {
-//                byte[] temp = new byte[r];
-//                System.arraycopy(buffer,0,temp,0,r);
-//
-//                byte[] res =  encryptAES.decrypt(temp);
-//                out.write(res );
-//                out.flush();
-//
-//            }
 
 
         }
-//            byte[] buffer = new byte[1024];
 
         return 1;
     }
-
 
 }
