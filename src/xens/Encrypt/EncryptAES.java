@@ -17,7 +17,7 @@ public class EncryptAES {
             //初始化
         try {
              secretKey = generateKey(strKey);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
         }
 //            byte[] encryptResult = encrypt(content,secretKey);
@@ -29,27 +29,35 @@ public class EncryptAES {
      * 生成key函数
      * @return 返回key
      */
-    public static SecretKey generateKey(String strKey) throws NoSuchAlgorithmException {
+    public static SecretKey generateKey(String strKey) throws NoSuchAlgorithmException, IOException {
+
+
         //要生成什么加密方式的key,生成aes的实例
-        KeyGenerator secretGenerator = KeyGenerator.getInstance(ALGORITHM);
-        //随机数生成器 Random
-        Random random = new Random();
-        Long longKey = Long.parseLong(strKey);
-        //设置随机数种子
-        random.setSeed(longKey);
-        byte[] buffer = new byte[16];
-        random.nextBytes(buffer);
+//        KeyGenerator secretGenerator = KeyGenerator.getInstance(ALGORITHM);
+
+//        SecureRandom secureRandom = new SecureRandom();
+        byte[] decodedKey = Base64.getDecoder().decode(strKey);
+//        secureRandom.setSeed(decodedKey);
+        SecureRandom secureRandom= SecureRandom.getInstance("SHA1PRNG");
+        secureRandom.setSeed(decodedKey);
+//        Integer randNum = secureRandom.nextInt();
         //对key进行初始化
-//        secretGenerator.init(random);
+//        secretGenerator.init(secureRandom);
+        byte[] byteKey = new byte[16];
+        secureRandom.nextBytes(byteKey);
+
+//        int s = secureRandom.nextInt();
+//         secureRandom.nextBytes(decodedKey);
         //生成key
-//        SecretKey secretKey = secretGenerator.generateKey();
+        SecretKey secretKey =  new SecretKeySpec(byteKey, 0, byteKey.length, "AES");
+        String stringKey=secretKey.toString();
 
 //        byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
 // rebuild key using SecretKeySpec
-        SecretKey originalKey = new SecretKeySpec(buffer, 0, buffer.length, "AES");
-        String encodedKey = Base64.getEncoder().encodeToString(originalKey.getEncoded());
+//        SecretKey originalKey = new SecretKeySpec(buffer, 0, buffer.length, "AES");
+//        String encodedKey = Base64.getEncoder().encodeToString(originalKey.getEncoded());
 
-        return originalKey;
+        return secretKey;
     }
     final static String charsetName = "UTF-8";
     //使用UTF8,避免中文
@@ -117,4 +125,44 @@ public class EncryptAES {
 //            e.printStackTrace();
 //        }
 //    }
+    /**
+     * 将字节数组转为long<br>
+     * 如果input为null,或offset指定的剩余数组长度不足8字节则抛出异常
+     * @param input
+     * @param offset 起始偏移量
+     * @param littleEndian 输入数组是否小端模式
+     * @return
+     */
+    public static long longFrom8Bytes(byte[] input, int offset, boolean littleEndian){
+        long value=0;
+        // 循环读取每个字节通过移位运算完成long的8个字节拼装
+        for(int  count=0;count<8;++count){
+            int shift=(littleEndian?count:(7-count))<<3;
+            value |=((long)0xff<< shift) & ((long)input[offset+count] << shift);
+        }
+        return value;
+    }
+    public static long byteArrayToLong(byte[] data) throws IOException {
+        ByteArrayInputStream bai = new ByteArrayInputStream(data);
+        DataInputStream dis =new DataInputStream(bai);
+        return dis.readLong();
+    }
+    static Long convertKeys(String keys) {
+        int[] intKeys = new int[keys.length()];
+        char[] chKeys = keys.toCharArray();
+        String strKeys = "";
+        Long longKey = null;
+        for (int i = 0; i < intKeys.length; i++) {
+            if (Character.isDigit(chKeys[i])) {
+                int num = (int) chKeys[i] - (int) ('0');
+//                intKeys[i] = num;
+                strKeys+=num;
+            } else {
+//                intKeys[i] = 10;
+                int n = chKeys[i];
+                strKeys+= n;
+            }
+        }
+        return longKey;
+    }
 }
