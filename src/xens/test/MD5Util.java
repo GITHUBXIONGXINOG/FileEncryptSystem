@@ -7,22 +7,22 @@ import java.security.MessageDigest;
 
 public class MD5Util {
 
-    public static void main(String[] args) {
-        try {
-            //此处我测试的是我本机jdk源码文件的MD5值
-            String filePath = "C:\\Users\\96212\\Desktop\\1\\1.txt";
-
-            String md5Hashcode = md5HashCode(filePath);
-            String md5Hashcode32 = md5HashCode32(filePath);
-
-            System.out.println(md5Hashcode + "：文件的md5值");
-            System.out.println(md5Hashcode32+"：文件32位的md5值");
-
-            //System.out.println(-100 & 0xff);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        try {
+//            //此处我测试的是我本机jdk源码文件的MD5值
+//            String filePath = "C:\\Users\\96212\\Desktop\\1\\1.txt";
+//
+//            String md5Hashcode = md5HashCode(filePath);
+//            String md5Hashcode32 = md5HashCode32(filePath);
+//
+//            System.out.println(md5Hashcode + "：文件的md5值");
+//            System.out.println(md5Hashcode32+"：文件32位的md5值");
+//
+//            //System.out.println(-100 & 0xff);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     /**
      * 获取文件的md5值 ，有可能不是32位

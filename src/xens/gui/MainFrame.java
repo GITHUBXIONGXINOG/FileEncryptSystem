@@ -76,7 +76,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建title占位组件标签0
         JLabel label0 = new JLabel();
         //设置标签大小
-        label0.setPreferredSize(new Dimension(120, 90));
+        label0.setPreferredSize(new Dimension(240, 90));
         label0.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label0);
@@ -87,7 +87,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建指定图片和水平方向对齐的标签
         JLabel titleLabel = new JLabel(titleImage,SwingConstants.LEFT);
         //设置标签大小
-        titleLabel.setPreferredSize(new Dimension(630,90));
+        titleLabel.setPreferredSize(new Dimension(380,90));
         titleLabel.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加title标签到窗口
         this.add(titleLabel);
@@ -95,7 +95,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建title占位组件标签1
         JLabel label1 = new JLabel();
         //设置标签大小
-        label1.setPreferredSize(new Dimension(120, 90));
+        label1.setPreferredSize(new Dimension(240, 90));
         label1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label1);
