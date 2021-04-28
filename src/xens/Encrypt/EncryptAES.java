@@ -30,33 +30,17 @@ public class EncryptAES {
      * @return 返回key
      */
     public static SecretKey generateKey(String strKey) throws NoSuchAlgorithmException, IOException {
-
-
-        //要生成什么加密方式的key,生成aes的实例
-//        KeyGenerator secretGenerator = KeyGenerator.getInstance(ALGORITHM);
-
-//        SecureRandom secureRandom = new SecureRandom();
-        byte[] decodedKey = Base64.getDecoder().decode(strKey);
-//        secureRandom.setSeed(decodedKey);
+        //将用户输入密钥转为byte数组
+        byte[] decodedKey = strKey.getBytes("UTF-8");
+        //创建 SecureRandom 实例,并指定随机数生成器算法
         SecureRandom secureRandom= SecureRandom.getInstance("SHA1PRNG");
+        //将用户的输入密钥数组作为随机数种子
         secureRandom.setSeed(decodedKey);
-//        Integer randNum = secureRandom.nextInt();
-        //对key进行初始化
-//        secretGenerator.init(secureRandom);
+        //生成随机数,并存入byteKey中
         byte[] byteKey = new byte[16];
         secureRandom.nextBytes(byteKey);
-
-//        int s = secureRandom.nextInt();
-//         secureRandom.nextBytes(decodedKey);
-        //生成key
+        //将byte转为SecretKey
         SecretKey secretKey =  new SecretKeySpec(byteKey, 0, byteKey.length, "AES");
-        String stringKey=secretKey.toString();
-
-//        byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
-// rebuild key using SecretKeySpec
-//        SecretKey originalKey = new SecretKeySpec(buffer, 0, buffer.length, "AES");
-//        String encodedKey = Base64.getEncoder().encodeToString(originalKey.getEncoded());
-
         return secretKey;
     }
     final static String charsetName = "UTF-8";
