@@ -20,9 +20,6 @@ public class EncryptAES {
         } catch (NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
         }
-//            byte[] encryptResult = encrypt(content,secretKey);
-
-
     }
     static final String ALGORITHM = "AES";
     /**
@@ -53,7 +50,7 @@ public class EncryptAES {
      */
     public  byte[] encrypt(byte[] content) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, IOException {
 
-        String encodedKey = Base64.getEncoder().encodeToString(this.secretKey.getEncoded());
+//        String encodedKey = Base64.getEncoder().encodeToString(this.secretKey.getEncoded());
         //将content转为字节数组,模式为加密操作,密钥
         return aes(content,Cipher.ENCRYPT_MODE,this.secretKey);
 
