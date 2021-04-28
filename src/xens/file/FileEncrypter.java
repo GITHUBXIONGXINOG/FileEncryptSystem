@@ -103,29 +103,38 @@ public class FileEncrypter {
     private int AESFileOp(String encryptPath, String newPath, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
         InputStream is = new FileInputStream(encryptPath);
         OutputStream out = new FileOutputStream(newPath);
-        byte[] buffer = new byte[1024];
         int r;
-        while ((r = is.read(buffer)) > 0) {
-            byte[] temp = new byte[r];
-            System.arraycopy(buffer,0,temp,0,r);
+        if (method==0) {//加密
+            byte[] buffer = new byte[1024];
+            while ((r = is.read(buffer)) > 0) {
+                byte[] temp = new byte[r];
+                System.arraycopy(buffer,0,temp,0,r);
 //                out.write(aes(temp, Cipher.DECRYPT_MODE,this.secretKey));
-            if (method==0){//加密
-//                String encoded = Base64.getEncoder().encodeToString(temp);
-                byte[] res = encryptAES.encrypt(temp);
 
-                out.write(res);
-                out.flush();
-            }else {//解密
+//                String encoded = Base64.getEncoder().encodeToString(temp);
+                    byte[] res = encryptAES.encrypt(temp);
+//                out.write(temp);
+                    out.write(res);
+                    out.flush();
+            }
+        }else {//解密
+            byte[] buffer = new byte[1040];
+            while ((r = is.read(buffer)) > 0) {
+                byte[] temp = new byte[r];
+                System.arraycopy(buffer,0,temp,0,r);
+//                out.write(aes(temp, Cipher.DECRYPT_MODE,this.secretKey));
 //                String strTemp = new String(temp,"UTF-8");
 //                byte[] decoded = Base64.getDecoder().decode(strTemp);
-               byte[] res =  encryptAES.decrypt(temp);
+                byte[] res =  encryptAES.decrypt(temp);
 //                byte[] decoded = Base64.getDecoder().decode(res);
                 out.write(res );
                 out.flush();
+
             }
 
-
         }
+//            byte[] buffer = new byte[1024];
+
         return 1;
     }
 
