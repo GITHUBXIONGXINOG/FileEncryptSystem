@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.net.URL;
 
@@ -36,7 +38,7 @@ public class MainFrame extends JFrame implements ActionListener{
     //创建解密密钥输入文本框
     JTextField decryptKey = new JTextField();
     //创建文本输出域
-    JTextArea consoleArea = new JTextArea(20,62);
+    JTextArea consoleArea = new JTextArea(13,62);
 
     //创建主函数
     public static void main(String[] args){
@@ -114,7 +116,9 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //加密文件地址文本框
         encryptFilePath.setPreferredSize(new Dimension(220, 30));
+        encryptFilePath.addFocusListener(new JTextFieldHintListener(encryptFilePath,"拖拽文件或点击...按钮选择文件"));
         encryptFilePath.setBorder(BorderFactory.createLineBorder(Color.red));
+
         //添加文件地址文本框到窗口
         this.add(encryptFilePath);
 
@@ -149,6 +153,8 @@ public class MainFrame extends JFrame implements ActionListener{
         encryptKey.setPreferredSize(new Dimension(130,30));
         //设置加密密钥默认文字内容
         encryptKey.setText("1234567887654344");
+//        encryptKey.addFocusListener(new JTextFieldHintListener(encryptKey,"请输入加密密钥"));
+
         encryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加加密密钥输入标签到窗口
         this.add(encryptKey);
@@ -181,6 +187,7 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //设置解密文本输入框大小
         decryptFilePath.setPreferredSize(new Dimension(220,30));
+        decryptFilePath.addFocusListener(new JTextFieldHintListener(decryptFilePath,"拖拽文件或点击...按钮选择文件"));
         decryptFilePath.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
         this.add(decryptFilePath);
@@ -244,7 +251,6 @@ public class MainFrame extends JFrame implements ActionListener{
         //分别设置水平和垂直滚动条出现方式
         consolePanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         consolePanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        consolePanel.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
         this.add(consolePanel);
 
@@ -320,4 +326,38 @@ public class MainFrame extends JFrame implements ActionListener{
 
         }
     }
+
+    //文本框提示
+    public class JTextFieldHintListener implements FocusListener {
+        private String hintText;
+        private JTextField textField;
+        public JTextFieldHintListener(JTextField jTextField,String hintText) {
+            this.textField = jTextField;
+            this.hintText = hintText;
+            jTextField.setText(hintText);  //默认直接显示
+            jTextField.setForeground(Color.GRAY);
+        }
+
+        public void focusGained(FocusEvent e) {
+            //获取焦点时，清空提示内容
+            String temp = textField.getText();
+            if(temp.equals(hintText)) {
+                textField.setText("");
+                textField.setForeground(Color.BLACK);
+            }
+
+        }
+
+        public void focusLost(FocusEvent e) {
+            //失去焦点时，没有输入内容，显示提示内容
+            String temp = textField.getText();
+            if(temp.equals("")) {
+                textField.setForeground(Color.GRAY);
+                textField.setText(hintText);
+            }
+
+        }
+
+    }
+
 }
