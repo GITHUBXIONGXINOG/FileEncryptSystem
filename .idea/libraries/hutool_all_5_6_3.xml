@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="hutool-all-5.6.3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../hutool-all-5.6.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../bcprov-ext-jdk15on-1.68.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

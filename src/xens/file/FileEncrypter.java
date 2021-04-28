@@ -63,6 +63,7 @@ public class FileEncrypter {
             switch (method){
                 case 0: methodName="DES";break;
                 case 1: methodName="AES";break;
+                case 2: methodName="SM4";break;
             }
             //拼接文件名
             newPath += "_encrypted_"+methodName +'.'+ suffix;
@@ -81,7 +82,9 @@ public class FileEncrypter {
                     EncryptAES encryptAES = new EncryptAES(key);
                     AESFileOp(EncryptPath,newPath,0,encryptAES);
                     break;
-                default:
+                case 2:
+                    EncrySM4 encrySM4 = new EncrySM4(key);
+                    SM4FileOp(EncryptPath,newPath,0,encrySM4);
                     break;
             }
 
@@ -156,7 +159,8 @@ public class FileEncrypter {
 
                     break;
                 case 2:
-//                value = encryptAlgMove(content, key);
+                    EncrySM4 encrySM4 = new EncrySM4(key);
+                    SM4FileOp(decryptPath,newPath,1,encrySM4);
                     break;
                 default:
                     break;
@@ -233,7 +237,6 @@ public class FileEncrypter {
     private int DESFileOp(String encryptPath, String newPath, int method, EncryptDES encryptDES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
 
         String saveMD5;
-        int r;
         if (method==0) {//加密
             try {
                 print("正在使用DES加密...");
@@ -276,4 +279,54 @@ public class FileEncrypter {
         return 1;
     }
 
+    private int SM4FileOp(String encryptPath, String newPath, int method, EncrySM4 encrySM4) throws IOException {
+        InputStream is = new FileInputStream(encryptPath);
+        OutputStream out = new FileOutputStream(newPath);
+        String saveMD5;
+        int r;
+        //加密
+        if (method==0){
+            //计算文件MD5
+            String fileMd5 = MD5Util.md5HashCode(encryptPath);
+            //写入文件MD5信息
+            byte[] enMD5 = encrySM4.encrypt(fileMd5.getBytes());
+            out.write(enMD5);
+            out.flush();
+
+            byte[] buffer = new byte[1024];
+            while ((r = is.read(buffer)) > 0) {
+                byte[] temp = new byte[r];
+                System.arraycopy(buffer,0,temp,0,r);
+                byte[] resByte = encrySM4.encrypt(temp);
+                out.write(resByte);
+                out.flush();
+            }
+        }else {//解密
+            byte[] buffer = new byte[1040];
+            byte[] md5Buffer = new byte[48];
+            is.read(md5Buffer);
+            saveMD5 =  new String(encrySM4.decrypt(md5Buffer));
+            while ((r = is.read(buffer)) > 0) {
+                byte[] temp = new byte[r];
+                System.arraycopy(buffer,0,temp,0,r);
+
+                byte[] resByte =  encrySM4.decrypt(temp);
+                out.write(resByte );
+                out.flush();
+
+            }
+            print("解密操作完成");
+            print("正在比对文件MD5...");
+            print("文件保存MD5: "+ saveMD5);
+            //计算文件MD5
+            String fileMd5 = MD5Util.md5HashCode(newPath);
+            print("当前解密文件MD5: "+fileMd5);
+            if (saveMD5.equals(fileMd5)){
+                print("MD5比对成功!文件为原始文件");
+            }else {
+                print("MD5比对失败!文件被修改!!!");
+            }
+        }
+        return 1;
+    }
 }
