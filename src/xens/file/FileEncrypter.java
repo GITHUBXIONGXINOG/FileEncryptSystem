@@ -92,6 +92,8 @@ public class FileEncrypter {
             }
             switch(method){
                 case 0:
+                    print("DES加密中 >>> ");
+//                    docs.insertString(docs.getLength(), "当前选择文件大小约", attrset);//对文本进行追加
                     EncryptDES encryptDES = new EncryptDES(key,consoleArea);
                     DESFileOp(EncryptPath,newPath,0,encryptDES);
 
@@ -207,7 +209,7 @@ public class FileEncrypter {
         String saveMD5;
         if (method==0) {//加密
             try {
-                print("DES加密中 >>> ");
+//                print("DES加密中 >>> ");
                 int encryptIndex = encryptDES.encrypt(encryptPath,newPath);
                 if (encryptIndex==1){
                     print("\r");

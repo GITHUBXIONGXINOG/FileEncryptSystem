@@ -48,11 +48,11 @@ public class EncryptDES {
 //            consoleArea.select(0,consoleArea.getDocument().getLength());
 //            consoleArea.setText("");
             //插入内容
-//            Document docs = consoleArea.getDocument();//获得文本对象
+            Document docs = consoleArea.getDocument();//获得文本对象
 //
 //            String paneText = "";
 //               paneText = docs.getText(0, docs.getLength());
-//            docs.insertString(docs.getLength(), paneText+num, attrset);//对文本进行追加
+            docs.insertString(docs.getLength(), "⬛", attrset);//对文本进行追加
 //            consoleArea.setText(paneText+num);
 
 
@@ -116,18 +116,20 @@ public class EncryptDES {
     public int encrypt(String EncryptPath,String outPath) throws Exception {
 //        start = consoleArea.getLineStartOffset(2)+14;
 //        end = consoleArea.getLineEndOffset(2);
-        JProgressBar progressBar = new JProgressBar();
-        // 设置进度的 最小值 和 最大值
-        progressBar.setMinimum(MIN_PROGRESS);
-        progressBar.setMaximum(MAX_PROGRESS);
 
-        // 设置当前进度值
-        progressBar.setValue(currentProgress);
+//
+//        JProgressBar progressBar = new JProgressBar();
+//        // 设置进度的 最小值 和 最大值
+//        progressBar.setMinimum(MIN_PROGRESS);
+//        progressBar.setMaximum(MAX_PROGRESS);
+//
+//        // 设置当前进度值
+//        progressBar.setValue(currentProgress);
+//
+//        // 绘制百分比文本（进度条中间显示的百分数）
+//        progressBar.setStringPainted(true);
+//        consoleArea.insertComponent(progressBar);
 
-        // 绘制百分比文本（进度条中间显示的百分数）
-        progressBar.setStringPainted(true);
-
-        this.consoleArea.insertComponent(progressBar);
         Cipher cipher = Cipher.getInstance("DES");
         // cipher.init(Cipher.ENCRYPT_MODE, getKey());
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -142,7 +144,7 @@ public class EncryptDES {
         //分组加密次数
         int allTime = (int) Math.ceil((fileLen/512));
         //触发更改的次数
-        int rTime = allTime/100;
+        int rTime = allTime/10;
 
         //计算文件MD5
         String fileMd5 = MD5Util.md5HashCode(EncryptPath);
@@ -157,10 +159,12 @@ public class EncryptDES {
             out.write(buffer, 0, r);
             n++;
                 if(rTime!=0&&n%rTime==0){
-                    progressBar.setValue(n/rTime);
+//                    progressBar.setValue(n/rTime);
+                    print(n/rTime);
                 }
                 if (r<512||rTime==0){
-                    progressBar.setValue(100);
+                    print(100);
+//                    progressBar.setValue(100);
                 }
 
 
@@ -205,9 +209,9 @@ public class EncryptDES {
             if (r==1024){
                 sum += r;
                 progress = sum / fileLen;
-                print((int) (progress*100));
+//                print((int) (progress*100));
             }else {
-                print(100);
+//                print(100);
             }
         }
         cos.close();
