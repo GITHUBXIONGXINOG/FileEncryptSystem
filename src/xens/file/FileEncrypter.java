@@ -312,13 +312,18 @@ public class FileEncrypter {
     }
 
 
-    private int SM4FileOp(String encryptPath, String newPath, int method, EncrySM4 encrySM4) throws IOException {
+    private int SM4FileOp(String encryptPath, String newPath, int method, EncrySM4 encrySM4) throws IOException, BadLocationException {
         InputStream is = new FileInputStream(encryptPath);
         OutputStream out = new FileOutputStream(newPath);
         String saveMD5;
         int r;
+        double progress,sum=0;
+        File f = new File(encryptPath);
+        //获取文件长度
+        double fileLen = f.length();
         //加密
         if (method==0){
+            print("正在使用SM4加密 >>> ");
             //计算文件MD5
             String fileMd5 = MD5Util.md5HashCode(encryptPath);
             //写入文件MD5信息
@@ -333,8 +338,18 @@ public class FileEncrypter {
                 byte[] resByte = encrySM4.encrypt(temp);
                 out.write(resByte);
                 out.flush();
+                if (r==1024){
+                    sum += r;
+                    progress = sum / fileLen;
+                    printProgress((int) (progress*100));
+                }else {
+                    printProgress(100);
+                    print("\r");
+                    print("文件加密完成");
+                }
             }
         }else {//解密
+            print("正在使用SM4解密 >>> ");
             byte[] buffer = new byte[1040];
             byte[] md5Buffer = new byte[48];
             is.read(md5Buffer);
@@ -346,6 +361,15 @@ public class FileEncrypter {
                 byte[] resByte =  encrySM4.decrypt(temp);
                 out.write(resByte );
                 out.flush();
+                if (r==1040){
+                    sum += r;
+                    progress = sum / fileLen;
+                    printProgress((int) (progress*100));
+                }else {
+                    printProgress(100);
+                    print("\r");
+                    print("文件解密完成");
+                }
 
             }
             print("解密操作完成");
