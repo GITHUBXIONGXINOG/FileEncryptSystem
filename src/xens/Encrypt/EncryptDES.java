@@ -82,7 +82,7 @@ public class EncryptDES {
 
 
     public int encrypt(String EncryptPath,String outPath) throws Exception {
-        start = consoleArea.getLineStartOffset(2)+12;
+        start = consoleArea.getLineStartOffset(2)+14;
         end = consoleArea.getLineEndOffset(2);
 
         Cipher cipher = Cipher.getInstance("DES");
@@ -96,13 +96,8 @@ public class EncryptDES {
         File f = new File(EncryptPath);
         //获取文件长度
         double fileLen = f.length();
-        //分组加密次数 一次1024byte / 8 = 128 bit
+        //分组加密次数
         int time = (int) Math.ceil((fileLen/512));
-//        if( f.length() > 1024 ) {
-//            consoleArea.append(f.length()/1024 + "KB\r\n");
-//        }else {
-//            consoleArea.append(f.length() + "B\r\n");
-//        }
 
         //计算文件MD5
         String fileMd5 = MD5Util.md5HashCode(EncryptPath);
@@ -112,49 +107,58 @@ public class EncryptDES {
 
         byte[] buffer = new byte[1024];
         int r;
-        int sum = 0;
         double n=0,progress = 0;
         while ((r = cis.read(buffer)) > 0) {
             out.write(buffer, 0, r);
-            sum += r;
             progress =((int)((n++/time)*1000))/10.0;
-//            print(progress);
-
             if ((int)progress == progress){
                 print((int)progress);
             }
         }
-//        Long progress = Long.valueOf(n*8*1024);
-//        print(String.valueOf(progress/len));
         cis.close();
         is.close();
         out.close();
         return 1;
     }
     public int decrypt(String decryptPath,String newPath) throws Exception {
-
+        start = consoleArea.getLineStartOffset(2)+13;
+        end = consoleArea.getLineEndOffset(2);
         Cipher cipher = Cipher.getInstance("DES");//返回实现指定转换的密码对象
         //init使用密钥初始化此密码
-//        cipher.init(Cipher.DECRYPT_MODE, this.key);//DECRYPT_MODE, 用于将密码初始化为解密模式的常量。
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
         InputStream is = new FileInputStream(decryptPath);//流读取文件
         OutputStream out = new FileOutputStream(newPath);//流输出文件
         CipherOutputStream cos = new CipherOutputStream(out, cipher);//由一个OutputStream和一个密码组成,对数据进行加密后写入
-        //计算文件MD5
-//        String fileMd5 = MD5Util.md5HashCode(EncryptPath);
-//        byte[] byteMD5 = cipher.doFinal(fileMd5.getBytes());
-        //写入文件MD5信息
-//        out.write(byteMD5);
+        File f = new File(decryptPath);
+        //获取文件长度
+        double fileLen = f.length();
+
         //获取文件保存的MD5信息
         byte[] byteMD5 = new byte[40];
         is.read(byteMD5);
         saveMD5 = new String(cipher.doFinal(byteMD5));
         byte[] buffer = new byte[1024];
         int r;
+        double progress,sum=0;
         while ((r = is.read(buffer)) >= 0) {
-            System.out.println();
             cos.write(buffer, 0, r);
+            if (r==1024){
+                sum += r;
+                progress = sum / fileLen;
+                print((int) (progress*100));
+            }else {
+                print(100);
+            }
+
+//            progress =((int)((n++/time)*1000))/10.0;
+//            if ( progress>temp &&progress<100){
+//                print((int)progress);
+//                temp = Math.ceil(progress);
+//            }
+//            if(progress>=100){
+//                print(100);
+//            }
         }
         cos.close();
         out.close();

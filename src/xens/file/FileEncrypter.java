@@ -186,7 +186,7 @@ public class FileEncrypter {
         String saveMD5;
         if (method==0) {//加密
             try {
-                print("正在使用DES加密>>>");
+                print("正在使用DES加密 >>> ");
                 int encryptIndex = encryptDES.encrypt(encryptPath,newPath);
                 if (encryptIndex==1){
                     print("\r");
@@ -198,10 +198,11 @@ public class FileEncrypter {
             }
 
         }else {//解密
-            print("正在使用DES解密...");
+            print("正在使用DES解密 >>> ");
             try {
                 int encryptIndex = encryptDES.decrypt(encryptPath,newPath);
                 if (encryptIndex==1){
+                    print("\r");
                     print("解密操作完成");
                     print("正在比对文件MD5...");
                     saveMD5 = encryptDES.getSaveMD5();
