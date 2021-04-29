@@ -41,7 +41,7 @@ public class MainFrame extends JFrame implements ActionListener{
     //创建解密密钥输入文本框
     JTextField decryptKey = new JTextField();
     //创建文本输出域
-    JTextArea consoleArea = new JTextArea(13,79);
+    JTextArea consoleArea = new JTextArea(10,76);
 
     //创建主函数
     public static void main(String[] args){
@@ -351,13 +351,15 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建解密组件占位标签4
         JLabel label6 = new JLabel();
         //设置标签大小
-        label6.setPreferredSize(new Dimension(20, 90));
+        label6.setPreferredSize(new Dimension(60, 90));
         label6.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加标签到窗口
         this.add(label6);
 
         //设置输出文本框不可编辑
         consoleArea.setEditable(false);
+        Font font = new Font("宋体",Font.PLAIN,18);
+        consoleArea.setFont(font);
         //滚动面板
         JScrollPane consolePanel = new JScrollPane(consoleArea);
         //分别设置水平和垂直滚动条出现方式
@@ -369,7 +371,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建输出域占位组件标签5
         JLabel label7 = new JLabel();
         //设置标签大小
-        label7.setPreferredSize(new Dimension(20, 90));
+        label7.setPreferredSize(new Dimension(60, 90));
         label7.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label7);

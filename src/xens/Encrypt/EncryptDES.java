@@ -28,7 +28,7 @@ public class EncryptDES {
     //创建打印类
     void print(int num) throws BadLocationException {
         if (consoleArea != null) {
-             consoleArea.replaceRange(String.valueOf(num),start, consoleArea.getLineEndOffset(2));
+             consoleArea.replaceRange(num+"%",start, consoleArea.getLineEndOffset(2));
         }
     }
     /**
@@ -91,8 +91,8 @@ public class EncryptDES {
         //获取文件长度
         double fileLen = f.length();
         //分组加密次数
-        int time = (int) Math.ceil((fileLen/512));
-
+        int allTime = (int) Math.ceil((fileLen/512));
+        int nTime = allTime/100;
         //计算文件MD5
         String fileMd5 = MD5Util.md5HashCode(EncryptPath);
         byte[] byteMD5 = cipher.doFinal(fileMd5.getBytes());
@@ -101,13 +101,24 @@ public class EncryptDES {
 
         byte[] buffer = new byte[1024];
         int r;
-        double n=0,progress = 0;
+        int n=0,progress = 0;
         while ((r = cis.read(buffer)) > 0) {
             out.write(buffer, 0, r);
-            progress =((int)((n++/time)*1000))/10.0;
-            if ((int)progress == progress){
-                print((int)progress);
+            n++;
+            if (nTime!=0&&n%nTime==0){
+                print(n/nTime);
             }
+            if (nTime==0||r<512){
+                print(100);
+            }
+//            progress =((int)((n++/time)*1000))/10.0;
+//            if ((int)progress == progress){
+//                print((int)progress);
+//            }
+//            if (r<1024){
+//                print(100);
+//
+//            }
         }
         cis.close();
         is.close();
