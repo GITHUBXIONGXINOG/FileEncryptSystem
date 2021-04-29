@@ -9,6 +9,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -19,23 +22,33 @@ public class FileEncrypter {
     public FileEncrypter() {
     }
     //创建输出域
-    JTextArea consoleArea;
+    JTextPane consoleArea;
     //创建文件加密输出,传入输出内容
-    public FileEncrypter(JTextArea consoleArea) {
+    public FileEncrypter(JTextPane consoleArea) {
         this.consoleArea = consoleArea;
     }
     //创建打印类
     void print(String str) {
         System.out.println(str);
         if (consoleArea != null) {
-            consoleArea.append(str);
-            consoleArea.append("\r\n");
+            SimpleAttributeSet attrset = new SimpleAttributeSet();
+            StyleConstants.setFontSize(attrset,16);
+
+            //插入内容
+            Document docs = consoleArea.getDocument();//获得文本对象
+            try {
+                docs.insertString(docs.getLength(), str, attrset);//对文本进行追加
+                docs.insertString(docs.getLength(), "\r\n", attrset);//对文本进行追加
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
         }
     }
     //创建打印进度类
     void printProgress(int num) throws BadLocationException {
         if (consoleArea != null) {
-            consoleArea.replaceRange(String.valueOf(num),consoleArea.getLineStartOffset(2)+14, consoleArea.getLineEndOffset(2));
+
+//            consoleArea.replaceRange(String.valueOf(num),consoleArea.getLineStartOffset(2)+14, consoleArea.getLineEndOffset(2));
         }
     }
 
@@ -101,6 +114,7 @@ public class FileEncrypter {
             } else {
                 print("用时" + (duration) + "ms");
             }
+            print("----------------------------------------------------------------------------------------------------------------------------------------------");
             return 1;
 
         }catch (Exception e){
@@ -177,6 +191,8 @@ public class FileEncrypter {
             } else {
                 print("用时" + (duration) + "ms");
             }
+            print("----------------------------------------------------------------------------------------------------------------------------------------------");
+
             return 1;
 
         }catch (Exception e){
@@ -191,7 +207,7 @@ public class FileEncrypter {
         String saveMD5;
         if (method==0) {//加密
             try {
-                print("正在使用DES加密 >>> ");
+                print("DES加密中 >>> ");
                 int encryptIndex = encryptDES.encrypt(encryptPath,newPath);
                 if (encryptIndex==1){
                     print("\r");

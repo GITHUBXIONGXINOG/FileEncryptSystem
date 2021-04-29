@@ -5,6 +5,9 @@ import xens.gui.thread.EncryptThread;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -41,7 +44,7 @@ public class MainFrame extends JFrame implements ActionListener{
     //创建解密密钥输入文本框
     JTextField decryptKey = new JTextField();
     //创建文本输出域
-    JTextArea consoleArea = new JTextArea(13,79);
+    JTextPane consoleArea = new JTextPane();
 
     //创建主函数
     public static void main(String[] args){
@@ -140,13 +143,26 @@ public class MainFrame extends JFrame implements ActionListener{
                     System.out.println(filepath);
                     //添加到文本框
                     encryptFilePath.setText(filepath);
-                    //设置输出文本域
-                    consoleArea.setText("当前选择文件大小约");
                     File f = new File(filepath);
+                    //设置输出文本域
+                    String insertString = "";
                     if( f.length() > 1024 ) {
-                        consoleArea.append(f.length()/1024 + "KB\r\n");
+                        insertString = f.length()/1024 + "KB\r\n";
                     }else {
-                        consoleArea.append(f.length() + "B\r\n");
+                        insertString = f.length() + "B\r\n";
+                    }
+                    //设置字体大小
+                    SimpleAttributeSet attrset = new SimpleAttributeSet();
+                    StyleConstants.setFontSize(attrset,16);
+
+                    //插入内容
+                    Document docs = consoleArea.getDocument();//获得文本对象
+                    try {
+                        consoleArea.setText("");
+                        docs.insertString(docs.getLength(), "当前选择文件大小约", attrset);//对文本进行追加
+                        docs.insertString(docs.getLength(), insertString, attrset);//对文本进行追加
+                    } catch (BadLocationException wrong) {
+                        wrong.printStackTrace();
                     }
                     return true;
                 }
@@ -265,13 +281,26 @@ public class MainFrame extends JFrame implements ActionListener{
                     }
                     //添加到文本框
                     decryptFilePath.setText(filepath);
-                    //设置输出文本域
-                    consoleArea.setText("当前选择文件大小约");
                     File f = new File(filepath);
+                    //设置输出文本域
+                    String insertString = "";
                     if( f.length() > 1024 ) {
-                        consoleArea.append(f.length()/1024 + "KB\r\n");
+                        insertString = f.length()/1024 + "KB\r\n";
                     }else {
-                        consoleArea.append(f.length() + "B\r\n");
+                        insertString = f.length() + "B\r\n";
+                    }
+                    //设置字体大小
+                    SimpleAttributeSet attrset = new SimpleAttributeSet();
+                    StyleConstants.setFontSize(attrset,16);
+
+                    //插入内容
+                    Document docs = consoleArea.getDocument();//获得文本对象
+                    try {
+                        consoleArea.setText("");
+                        docs.insertString(docs.getLength(), "当前选择文件大小约", attrset);//对文本进行追加
+                        docs.insertString(docs.getLength(), insertString, attrset);//对文本进行追加
+                    } catch (BadLocationException wrong) {
+                        wrong.printStackTrace();
                     }
                     return true;
                 }
@@ -358,7 +387,8 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //设置输出文本框不可编辑
         consoleArea.setEditable(false);
-        //滚动面板
+        consoleArea.setPreferredSize(new Dimension(790,200));
+        //滚动面板2
         JScrollPane consolePanel = new JScrollPane(consoleArea);
         //分别设置水平和垂直滚动条出现方式
         consolePanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -396,11 +426,24 @@ public class MainFrame extends JFrame implements ActionListener{
                 //将文本加密标签,将当前的路径设置为文字内容
                 encryptFilePath.setText(s);
                 //设置输出文本域
-                consoleArea.setText("当前选择文件大小约");
+                String insertString = "";
                 if( f.length() > 1024 ) {
-                    consoleArea.append(f.length()/1024 + "KB\r\n");
+                    insertString = f.length()/1024 + "KB\r\n";
                 }else {
-                    consoleArea.append(f.length() + "B\r\n");
+                    insertString = f.length() + "B\r\n";
+                }
+                //设置字体大小
+                SimpleAttributeSet attrset = new SimpleAttributeSet();
+                StyleConstants.setFontSize(attrset,18);
+
+                //插入内容
+                Document docs = consoleArea.getDocument();//获得文本对象
+                try {
+                    consoleArea.setText("");
+                    docs.insertString(docs.getLength(), "当前选择文件大小约", attrset);//对文本进行追加
+                    docs.insertString(docs.getLength(), insertString, attrset);//对文本进行追加
+                } catch (BadLocationException wrong) {
+                    wrong.printStackTrace();
                 }
             }
         }else if (e.getSource() == btnDecryptFileChooser){ //当前触发的事件发起者是文件解密选择
@@ -418,36 +461,39 @@ public class MainFrame extends JFrame implements ActionListener{
                 //将文本加密标签,将当前的路径设置为文字内容
                 decryptFilePath.setText(s);
                 //设置输出文本域
-                consoleArea.setText("当前选择文件大小约");
+                String insertString = "";
                 if( f.length() > 1024 ) {
-                    consoleArea.append(f.length()/1024 + "KB\r\n");
+                    insertString = f.length()/1024 + "KB\r\n";
                 }else {
-                    consoleArea.append(f.length() + "B\r\n");
+                    insertString = f.length() + "B\r\n";
+                }
+                //设置字体大小
+                SimpleAttributeSet attrset = new SimpleAttributeSet();
+                StyleConstants.setFontSize(attrset,18);
+
+                //插入内容
+                Document docs = consoleArea.getDocument();//获得文本对象
+                try {
+                    consoleArea.setText("");
+                    docs.insertString(docs.getLength(), "当前选择文件大小约", attrset);//对文本进行追加
+                    docs.insertString(docs.getLength(), insertString, attrset);//对文本进行追加
+                } catch (BadLocationException wrong) {
+                    wrong.printStackTrace();
                 }
             }
         }else if (e.getSource() == btnEncrypt){//当前触发的事件发起者是文件加密按钮
             //将方法选择框选中的加密方法转换为String类型
             String.valueOf(encryptMethod.getSelectedItem());
-            try {
-                int start = consoleArea.getLineStartOffset(1);
-                int end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-1);
-                consoleArea.replaceRange("",start,end);
-            } catch (BadLocationException badLocationException) {
-                badLocationException.printStackTrace();
-            }
-            //创建新的加密线程,并传入对应的信息,使用start()调用新线程
+//                consoleArea.setText("");
+//            //创建新的加密线程,并传入对应的信息,使用start()调用新线程
             new EncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
+//
         }else if(e.getSource() == btnDecrypt){//当前触发的事件发起者是文件解密按钮
-            //将方法选择框选中的加密方法转换为String类型
-            String.valueOf(encryptMethod.getSelectedItem());
-            try {
-                int start = consoleArea.getLineStartOffset(1);
-                int end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-1);
-                consoleArea.replaceRange("",start,end);
-            } catch (BadLocationException badLocationException) {
-                badLocationException.printStackTrace();
-            }
-            //创建新的加密线程,并传入对应的信息,使用start()调用新线程
+//            //将方法选择框选中的加密方法转换为String类型
+//            String.valueOf(encryptMethod.getSelectedItem());
+            consoleArea.setText("");
+
+//            //创建新的加密线程,并传入对应的信息,使用start()调用新线程
             new DecryptThread(this,btnEncrypt,btnDecrypt,decryptFilePath,decryptKey,decryptMethod,consoleArea).start();
 
         }

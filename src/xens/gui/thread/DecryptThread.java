@@ -12,9 +12,9 @@ public class DecryptThread extends Thread {
     JTextField decryptFilePath;//解密地址
     JTextField decryptKey;//解密密钥
     JComboBox<String> decryptMethod;//解密方法
-    JTextArea consoleArea;//输出域
+    JTextPane consoleArea;//输出域
 
-    public DecryptThread(JFrame jf,JButton btnEncrypt,JButton btnDecrypt, JTextField decryptFilePath,JTextField decryptKey,JComboBox<String> decryptMethod,JTextArea consoleArea){
+    public DecryptThread(JFrame jf,JButton btnEncrypt,JButton btnDecrypt, JTextField decryptFilePath,JTextField decryptKey,JComboBox<String> decryptMethod,JTextPane consoleArea){
         this.jf = jf;
         this.btnEncrypt = btnEncrypt;
         this.btnDecrypt = btnDecrypt;

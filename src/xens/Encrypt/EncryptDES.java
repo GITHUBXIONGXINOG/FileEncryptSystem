@@ -4,7 +4,14 @@ import javax.crypto.*;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,13 +21,20 @@ import java.security.SecureRandom;
 public class EncryptDES {
     SecretKey secretKey;//建立key对象,需要定义密钥算法,编码,编码密钥的格式
     //创建输出域
-    JTextArea consoleArea;
+    JTextPane consoleArea;
     int start,end;
+    // 设置 最小进度值、最大进度值、当前进度值
+    private static final int MIN_PROGRESS = 0;
+    private static final int MAX_PROGRESS = 100;
+
+    private static int currentProgress = MIN_PROGRESS;
 
     //    创建共有的EncryptDES类,可以被该类的和非该类的任何成员访问
-    public EncryptDES(String strKey,JTextArea consoleArea) throws BadLocationException {//传入输入密钥,和输出域
+    public EncryptDES(String strKey,JTextPane consoleArea) throws BadLocationException {//传入输入密钥,和输出域
          getKey(strKey);
         this.consoleArea = consoleArea;
+
+
     }
 
 
@@ -28,7 +42,31 @@ public class EncryptDES {
     //创建打印类
     void print(int num) throws BadLocationException {
         if (consoleArea != null) {
-             consoleArea.replaceRange(String.valueOf(num),start, consoleArea.getLineEndOffset(2));
+            SimpleAttributeSet attrset = new SimpleAttributeSet();
+            StyleConstants.setFontSize(attrset,16);
+//            consoleArea.requestFocus();
+//            consoleArea.select(0,consoleArea.getDocument().getLength());
+//            consoleArea.setText("");
+            //插入内容
+//            Document docs = consoleArea.getDocument();//获得文本对象
+//
+//            String paneText = "";
+//               paneText = docs.getText(0, docs.getLength());
+//            docs.insertString(docs.getLength(), paneText+num, attrset);//对文本进行追加
+//            consoleArea.setText(paneText+num);
+
+
+
+//                consoleArea.setCaretPosition(0);
+//                consoleArea.select(0,10);
+//                paneText = consoleArea.getSelectedText();
+//                consoleArea.requestFocus();
+//            consoleArea.replaceSelection("String.valueOf(num)");
+
+//                docs.insertString(docs.getLength(), String.valueOf(num), attrset);//对文本进行追加
+//                docs.insertString(docs.getLength(), "\r\n", attrset);//对文本进行追加
+
+//             consoleArea.replaceRange(String.valueOf(num),start, consoleArea.getLineEndOffset(2));
         }
     }
     /**
@@ -76,9 +114,20 @@ public class EncryptDES {
 
 
     public int encrypt(String EncryptPath,String outPath) throws Exception {
-        start = consoleArea.getLineStartOffset(2)+14;
-        end = consoleArea.getLineEndOffset(2);
+//        start = consoleArea.getLineStartOffset(2)+14;
+//        end = consoleArea.getLineEndOffset(2);
+        JProgressBar progressBar = new JProgressBar();
+        // 设置进度的 最小值 和 最大值
+        progressBar.setMinimum(MIN_PROGRESS);
+        progressBar.setMaximum(MAX_PROGRESS);
 
+        // 设置当前进度值
+        progressBar.setValue(currentProgress);
+
+        // 绘制百分比文本（进度条中间显示的百分数）
+        progressBar.setStringPainted(true);
+
+        this.consoleArea.insertComponent(progressBar);
         Cipher cipher = Cipher.getInstance("DES");
         // cipher.init(Cipher.ENCRYPT_MODE, getKey());
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -91,7 +140,9 @@ public class EncryptDES {
         //获取文件长度
         double fileLen = f.length();
         //分组加密次数
-        int time = (int) Math.ceil((fileLen/512));
+        int allTime = (int) Math.ceil((fileLen/512));
+        //触发更改的次数
+        int rTime = allTime/100;
 
         //计算文件MD5
         String fileMd5 = MD5Util.md5HashCode(EncryptPath);
@@ -101,13 +152,26 @@ public class EncryptDES {
 
         byte[] buffer = new byte[1024];
         int r;
-        double n=0,progress = 0;
+        int n=0,progress = 0;
         while ((r = cis.read(buffer)) > 0) {
             out.write(buffer, 0, r);
-            progress =((int)((n++/time)*1000))/10.0;
-            if ((int)progress == progress){
-                print((int)progress);
-            }
+            n++;
+                if(rTime!=0&&n%rTime==0){
+                    progressBar.setValue(n/rTime);
+                }
+                if (r<512||rTime==0){
+                    progressBar.setValue(100);
+                }
+
+
+
+//            progress =((int)((n++/allTime)*1000))/10.0;
+//            progressBar.setValue(10);
+//            if ((int)progress == progress){
+////                print((int)progress);
+//
+//
+//            }
         }
         cis.close();
         is.close();
@@ -115,8 +179,8 @@ public class EncryptDES {
         return 1;
     }
     public int decrypt(String decryptPath,String newPath) throws Exception {
-        start = consoleArea.getLineStartOffset(2)+13;
-        end = consoleArea.getLineEndOffset(2);
+//        start = consoleArea.getLineStartOffset(2)+13;
+//        end = consoleArea.getLineEndOffset(2);
         Cipher cipher = Cipher.getInstance("DES");//返回实现指定转换的密码对象
         //init使用密钥初始化此密码
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
@@ -131,6 +195,7 @@ public class EncryptDES {
         //获取文件保存的MD5信息
         byte[] byteMD5 = new byte[40];
         is.read(byteMD5);
+        byte[] byre5 = cipher.doFinal(byteMD5);
         saveMD5 = new String(cipher.doFinal(byteMD5));
         byte[] buffer = new byte[1024];
         int r;

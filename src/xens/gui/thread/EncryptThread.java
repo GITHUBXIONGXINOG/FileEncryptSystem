@@ -13,9 +13,9 @@ public class EncryptThread extends Thread {
     JTextField encryptFilePath;//加密地址
     JTextField encryptKey;//加密密钥
     JComboBox<String> encryptMethod;//加密方法
-    JTextArea consoleArea;//输出域
+    JTextPane consoleArea;//输出域
 
-    public EncryptThread(JFrame jf,JButton btnEncrypt,JButton btnDecrypt, JTextField encryptFilePath,JTextField encryptKey,JComboBox<String> encryptMethod,JTextArea consoleArea){
+    public EncryptThread(JFrame jf,JButton btnEncrypt,JButton btnDecrypt, JTextField encryptFilePath,JTextField encryptKey,JComboBox<String> encryptMethod,JTextPane consoleArea){
         this.jf = jf;
         this.btnEncrypt = btnEncrypt;
         this.btnDecrypt = btnDecrypt;
