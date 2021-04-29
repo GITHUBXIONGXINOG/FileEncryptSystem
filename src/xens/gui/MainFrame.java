@@ -4,6 +4,7 @@ import xens.gui.thread.DecryptThread;
 import xens.gui.thread.EncryptThread;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -56,7 +57,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //设置窗口大小
         this.setSize(900,500);
         //设置窗口不能被用户调整大小
-//        this.setResizable(false);
+        this.setResizable(false);
         // 设置窗口相对于指定组件的位置,设置为null则窗口位于屏幕中央,
         this.setLocationRelativeTo(null);
         // 用户单击窗口的关闭按钮时程序执行的操作,参数为3时，表示关闭窗口则程序退出
@@ -138,6 +139,14 @@ public class MainFrame extends JFrame implements ActionListener{
                     System.out.println(filepath);
                     //添加到文本框
                     encryptFilePath.setText(filepath);
+                    //设置输出文本域
+                    consoleArea.setText("当前选择文件大小约");
+                    File f = new File(filepath);
+                    if( f.length() > 1024 ) {
+                        consoleArea.append(f.length()/1024 + "KB\r\n");
+                    }else {
+                        consoleArea.append(f.length() + "B\r\n");
+                    }
                     return true;
                 }
                 catch (Exception e) {
@@ -245,6 +254,14 @@ public class MainFrame extends JFrame implements ActionListener{
                     }
                     //添加到文本框
                     decryptFilePath.setText(filepath);
+                    //设置输出文本域
+                    consoleArea.setText("当前选择文件大小约");
+                    File f = new File(filepath);
+                    if( f.length() > 1024 ) {
+                        consoleArea.append(f.length()/1024 + "KB\r\n");
+                    }else {
+                        consoleArea.append(f.length() + "B\r\n");
+                    }
                     return true;
                 }
                 catch (Exception e) {
@@ -391,6 +408,13 @@ public class MainFrame extends JFrame implements ActionListener{
         }else if (e.getSource() == btnEncrypt){//当前触发的事件发起者是文件加密按钮
             //将方法选择框选中的加密方法转换为String类型
             String.valueOf(encryptMethod.getSelectedItem());
+            try {
+                int start = consoleArea.getLineStartOffset(1);
+                int end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-1);
+                consoleArea.replaceRange("",start,end);
+            } catch (BadLocationException badLocationException) {
+                badLocationException.printStackTrace();
+            }
             //创建新的加密线程,并传入对应的信息,使用start()调用新线程
             new EncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
         }else if(e.getSource() == btnDecrypt){//当前触发的事件发起者是文件解密按钮

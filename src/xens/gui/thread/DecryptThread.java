@@ -51,7 +51,7 @@ public class DecryptThread extends Thread {
             //显示面板
             JOptionPane.showMessageDialog(jf,"文件解密成功!","解密成功",JOptionPane.PLAIN_MESSAGE);
         }else {
-            JOptionPane.showMessageDialog(jf,"文件解密出现错误,请检查密码...","解密错误",JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(jf,"文件解密出现错误,请检查加密方式和密码...","解密错误",JOptionPane.WARNING_MESSAGE);
         }
 
         //设置按钮可用

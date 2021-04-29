@@ -4,17 +4,39 @@ import javax.crypto.*;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.io.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.Key;
 import java.security.SecureRandom;
 
 public class EncryptDES {
     SecretKey secretKey;//建立key对象,需要定义密钥算法,编码,编码密钥的格式
-//    创建共有的EncryptDES类,可以被该类的和非该类的任何成员访问
-    public EncryptDES(String strKey) {//传入输入密钥
+    //创建输出域
+    JTextArea consoleArea;
+    int start,end;
+
+    //    创建共有的EncryptDES类,可以被该类的和非该类的任何成员访问
+    public EncryptDES(String strKey,JTextArea consoleArea) throws BadLocationException {//传入输入密钥,和输出域
          getKey(strKey);
+        this.consoleArea = consoleArea;
     }
 
+
+
+    //创建打印类
+    void print(int num) throws BadLocationException {
+//        System.out.println(str);
+        if (consoleArea != null) {
+
+                consoleArea.replaceRange(String.valueOf(num),start, consoleArea.getLineEndOffset(2));
+
+//            consoleArea.append("#");
+
+//            consoleArea.append("\r\n");
+        }
+    }
     /**
      * 根据参数生成KEY
      * 使用try/catch捕获错误
@@ -60,6 +82,8 @@ public class EncryptDES {
 
 
     public int encrypt(String EncryptPath,String outPath) throws Exception {
+        start = consoleArea.getLineStartOffset(2)+12;
+        end = consoleArea.getLineEndOffset(2);
 
         Cipher cipher = Cipher.getInstance("DES");
         // cipher.init(Cipher.ENCRYPT_MODE, getKey());
@@ -67,6 +91,19 @@ public class EncryptDES {
         InputStream is = new FileInputStream(EncryptPath);
         OutputStream out = new FileOutputStream(outPath);
         CipherInputStream cis = new CipherInputStream(is, cipher);
+
+
+        File f = new File(EncryptPath);
+        //获取文件长度
+        double fileLen = f.length();
+        //分组加密次数 一次1024byte / 8 = 128 bit
+        int time = (int) Math.ceil((fileLen/512));
+//        if( f.length() > 1024 ) {
+//            consoleArea.append(f.length()/1024 + "KB\r\n");
+//        }else {
+//            consoleArea.append(f.length() + "B\r\n");
+//        }
+
         //计算文件MD5
         String fileMd5 = MD5Util.md5HashCode(EncryptPath);
         byte[] byteMD5 = cipher.doFinal(fileMd5.getBytes());
@@ -75,9 +112,20 @@ public class EncryptDES {
 
         byte[] buffer = new byte[1024];
         int r;
+        int sum = 0;
+        double n=0,progress = 0;
         while ((r = cis.read(buffer)) > 0) {
             out.write(buffer, 0, r);
+            sum += r;
+            progress =((int)((n++/time)*1000))/10.0;
+//            print(progress);
+
+            if ((int)progress == progress){
+                print((int)progress);
+            }
         }
+//        Long progress = Long.valueOf(n*8*1024);
+//        print(String.valueOf(progress/len));
         cis.close();
         is.close();
         out.close();
