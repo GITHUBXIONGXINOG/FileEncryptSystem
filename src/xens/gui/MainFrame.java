@@ -420,6 +420,13 @@ public class MainFrame extends JFrame implements ActionListener{
         }else if(e.getSource() == btnDecrypt){//当前触发的事件发起者是文件解密按钮
             //将方法选择框选中的加密方法转换为String类型
             String.valueOf(encryptMethod.getSelectedItem());
+            try {
+                int start = consoleArea.getLineStartOffset(1);
+                int end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-1);
+                consoleArea.replaceRange("",start,end);
+            } catch (BadLocationException badLocationException) {
+                badLocationException.printStackTrace();
+            }
             //创建新的加密线程,并传入对应的信息,使用start()调用新线程
             new DecryptThread(this,btnEncrypt,btnDecrypt,decryptFilePath,decryptKey,decryptMethod,consoleArea).start();
 

@@ -27,14 +27,8 @@ public class EncryptDES {
 
     //创建打印类
     void print(int num) throws BadLocationException {
-//        System.out.println(str);
         if (consoleArea != null) {
-
-                consoleArea.replaceRange(String.valueOf(num),start, consoleArea.getLineEndOffset(2));
-
-//            consoleArea.append("#");
-
-//            consoleArea.append("\r\n");
+             consoleArea.replaceRange(String.valueOf(num),start, consoleArea.getLineEndOffset(2));
         }
     }
     /**
@@ -150,15 +144,6 @@ public class EncryptDES {
             }else {
                 print(100);
             }
-
-//            progress =((int)((n++/time)*1000))/10.0;
-//            if ( progress>temp &&progress<100){
-//                print((int)progress);
-//                temp = Math.ceil(progress);
-//            }
-//            if(progress>=100){
-//                print(100);
-//            }
         }
         cos.close();
         out.close();

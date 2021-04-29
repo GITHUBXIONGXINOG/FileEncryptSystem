@@ -8,6 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -31,11 +32,15 @@ public class FileEncrypter {
             consoleArea.append("\r\n");
         }
     }
+    //创建打印进度类
+    void printProgress(int num) throws BadLocationException {
+        if (consoleArea != null) {
+            consoleArea.replaceRange(String.valueOf(num),consoleArea.getLineStartOffset(2)+14, consoleArea.getLineEndOffset(2));
+        }
+    }
 
     public int encrypt(File file,JTextField encryptFilePath, int method, String key){
         String EncryptPath = encryptFilePath.getText();
-        //创建文件类
-//        File file = new File(EncryptPath);
 
         Date start = new Date();
         print("正在加密: "+ file.getName());
@@ -228,12 +233,18 @@ public class FileEncrypter {
         return 1;
     }
 
-    private int AESFileOp(String encryptPath, String newPath, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
+    private int AESFileOp(String encryptPath, String newPath, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadLocationException {
         InputStream is = new FileInputStream(encryptPath);
         OutputStream out = new FileOutputStream(newPath);
         String saveMD5;
         int r;
+        double progress,sum=0;
+        File f = new File(encryptPath);
+        //获取文件长度
+        double fileLen = f.length();
+
         if (method==0) {//加密
+            print("正在使用AES加密 >>> ");
             //计算文件MD5
             String fileMd5 = MD5Util.md5HashCode(encryptPath);
             //写入文件MD5信息
@@ -248,8 +259,19 @@ public class FileEncrypter {
                 byte[] res = encryptAES.encrypt(temp);
                 out.write(res);
                 out.flush();
+                if (r==1024){
+                    sum += r;
+                    progress = sum / fileLen;
+                    printProgress((int) (progress*100));
+                }else {
+                    printProgress(100);
+                    print("\r");
+                    print("文件加密完成");
+                }
+
             }
         }else {//解密
+            print("正在使用AES解密 >>> ");
             byte[] buffer = new byte[1040];
             byte[] md5Buffer = new byte[48];
             is.read(md5Buffer);
@@ -261,6 +283,15 @@ public class FileEncrypter {
                 byte[] res =  encryptAES.decrypt(temp);
                 out.write(res );
                 out.flush();
+                if (r==1040){
+                    sum += r;
+                    progress = sum / fileLen;
+                    printProgress((int) (progress*100));
+                }else {
+                    printProgress(100);
+                    print("\r");
+                    print("文件解密完成");
+                }
 
             }
             print("解密操作完成");
