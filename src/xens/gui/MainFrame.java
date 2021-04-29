@@ -41,7 +41,7 @@ public class MainFrame extends JFrame implements ActionListener{
     //创建解密密钥输入文本框
     JTextField decryptKey = new JTextField();
     //创建文本输出域
-    JTextArea consoleArea = new JTextArea(13,62);
+    JTextArea consoleArea = new JTextArea(13,79);
 
     //创建主函数
     public static void main(String[] args){
@@ -55,7 +55,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //设置窗口名称
         this.setTitle("文件加密系统");
         //设置窗口大小
-        this.setSize(900,500);
+        this.setSize(860,560);
         //设置窗口不能被用户调整大小
         this.setResizable(false);
         // 设置窗口相对于指定组件的位置,设置为null则窗口位于屏幕中央,
@@ -77,7 +77,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建title占位组件标签0
         JLabel label0 = new JLabel();
         //设置标签大小
-        label0.setPreferredSize(new Dimension(240, 90));
+        label0.setPreferredSize(new Dimension(220, 90));
         label0.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label0);
@@ -96,7 +96,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建title占位组件标签1
         JLabel label1 = new JLabel();
         //设置标签大小
-        label1.setPreferredSize(new Dimension(240, 90));
+        label1.setPreferredSize(new Dimension(220, 90));
         label1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label1);
@@ -104,15 +104,16 @@ public class MainFrame extends JFrame implements ActionListener{
         //创建加密行占位组件标签2
         JLabel label2 = new JLabel();
         //设置标签大小
-        label2.setPreferredSize(new Dimension(120, 90));
+        label2.setPreferredSize(new Dimension(20, 90));
         label2.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label2);
 
         //加密文件标签
         JLabel encryptLabel = new JLabel("加密文件: ");
+        encryptLabel.setFont(new Font("宋体",Font.BOLD,16));
         //设置标签大小
-        encryptLabel.setPreferredSize(new Dimension(70, 30));
+        encryptLabel.setPreferredSize(new Dimension(90, 30));
         encryptLabel.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加文件加密标签到窗口
         this.add(encryptLabel);
@@ -180,8 +181,9 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //创建加密方法标签
         JLabel method0 = new JLabel("加密方法:");
+        method0.setFont(new Font("宋体",Font.BOLD,16));
         //设置标签大小
-        method0.setPreferredSize(new Dimension(60,30));
+        method0.setPreferredSize(new Dimension(90,30));
         method0.setBorder(BorderFactory.createLineBorder(Color.red));
         //将方法标签添加到窗口
         this.add(method0);
@@ -191,8 +193,9 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //创建密钥标签
         JLabel encryptLabel1 = new JLabel("加密密钥: ");
+        encryptLabel1.setFont(new Font("宋体",Font.BOLD,16));
         //设置密钥标签大小
-        encryptLabel1.setPreferredSize(new Dimension(60,30));
+        encryptLabel1.setPreferredSize(new Dimension(90,30));
         encryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加密钥标签到窗口
         this.add(encryptLabel1);
@@ -216,19 +219,27 @@ public class MainFrame extends JFrame implements ActionListener{
         this.add(btnEncrypt);
 
 
-        //创建解密行占位组件标签3
+        //创建加密行占位组件标签3
         JLabel label3 = new JLabel();
         //设置标签大小
-        label3.setPreferredSize(new Dimension(120, 30));
-        label3.setBorder(BorderFactory.createLineBorder(Color.red));
+        label3.setPreferredSize(new Dimension(20, 90));
+        label3.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加标签到窗口
         this.add(label3);
 
+        //创建解密行占位组件标签4
+        JLabel label4 = new JLabel();
+        //设置标签大小
+        label4.setPreferredSize(new Dimension(20, 90));
+        label4.setBorder(BorderFactory.createLineBorder(Color.black));
+        //添加标签到窗口
+        this.add(label4);
 
         //创建解密文件标签
         JLabel password = new JLabel("解密文件:");
+        password.setFont(new Font("宋体",Font.BOLD,16));
         //设置标签大小
-        password.setPreferredSize(new Dimension(70,30));
+        password.setPreferredSize(new Dimension(90,30));
         password.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(password);
@@ -294,8 +305,9 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //创建解密方法标签
         JLabel method1 = new JLabel("解密方法: ");
+        method1.setFont(new Font("宋体",Font.BOLD,16));
         //设置标签大小
-        method1.setPreferredSize(new Dimension(60,30));
+        method1.setPreferredSize(new Dimension(90,30));
         method1.setBorder(BorderFactory.createLineBorder(Color.red));
         //将方法标签添加到窗口
         this.add(method1);
@@ -305,8 +317,9 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //创建解密密钥标签
         JLabel decryptLabel1 = new JLabel("解密密钥: ");
+        decryptLabel1.setFont(new Font("宋体",Font.BOLD,16));
         //设置密钥标签大小
-        decryptLabel1.setPreferredSize(new Dimension(60,30));
+        decryptLabel1.setPreferredSize(new Dimension(90,30));
         decryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加密钥标签到窗口
         this.add(decryptLabel1);
@@ -327,14 +340,21 @@ public class MainFrame extends JFrame implements ActionListener{
         //添加解锁按钮到窗口
         this.add(btnDecrypt);
 
-        //创建输出域组件标签4
-        JLabel label4 = new JLabel();
+        //创建解密组件占位标签4
+        JLabel label5 = new JLabel();
         //设置标签大小
-        label4.setPreferredSize(new Dimension(120, 30));
-        label4.setBorder(BorderFactory.createLineBorder(Color.red));
+        label5.setPreferredSize(new Dimension(20, 90));
+        label5.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加标签到窗口
-        this.add(label4);
+        this.add(label5);
 
+        //创建解密组件占位标签4
+        JLabel label6 = new JLabel();
+        //设置标签大小
+        label6.setPreferredSize(new Dimension(20, 90));
+        label6.setBorder(BorderFactory.createLineBorder(Color.black));
+        //添加标签到窗口
+        this.add(label6);
 
         //设置输出文本框不可编辑
         consoleArea.setEditable(false);
@@ -347,12 +367,12 @@ public class MainFrame extends JFrame implements ActionListener{
         this.add(consolePanel);
 
         //创建输出域占位组件标签5
-        JLabel label5 = new JLabel();
+        JLabel label7 = new JLabel();
         //设置标签大小
-        label5.setPreferredSize(new Dimension(120, 30));
-        label5.setBorder(BorderFactory.createLineBorder(Color.red));
+        label7.setPreferredSize(new Dimension(20, 90));
+        label7.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
-        this.add(label5);
+        this.add(label7);
 
         // 设置窗口可见，此句一定要在窗口属性设置好了之后才能添加，不然无法正常显示
         this.setVisible(true);
