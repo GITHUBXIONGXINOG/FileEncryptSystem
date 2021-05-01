@@ -110,8 +110,6 @@ public class EncryptDES {
         byte[] encryptFileName =  cipher.doFinal(fileName.getBytes());
         //获取加密后的文件名长度
         int fileNameLen = encryptFileName.length;
-//        byte[] fileNameByte = new byte[fileNameLen];
-//        System.arraycopy(encryptFileName,0,fileNameByte,0,fileNameLen);
         //存入名字长度
         byte[] lenByte = cipher.doFinal((String.valueOf(fileNameLen)).getBytes());
         out.write(lenByte);

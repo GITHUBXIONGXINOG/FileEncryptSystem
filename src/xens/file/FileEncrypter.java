@@ -76,7 +76,7 @@ public class FileEncrypter {
                     break;
                 case 1:
                     EncryptAES encryptAES = new EncryptAES(key);
-                    AESFileOp(EncryptPath,newPath,0,encryptAES);
+                    AESFileOp(EncryptPath,newPath,fileName,0,encryptAES);
                     break;
                 case 2:
                     EncrySM4 encrySM4 = new EncrySM4(key);
@@ -125,10 +125,8 @@ public class FileEncrypter {
                     }
                     break;
                 case 1:
-//                value = encryptAlgMultiple(content, key);
                     EncryptAES encryptAES = new EncryptAES(key);
-//                    encryptAES.decrypt(decryptPath,newPath);
-                    int resAESFileOp = AESFileOp(decryptPath,newPath,1,encryptAES);
+                    int resAESFileOp = AESFileOp(decryptPath,newPath,fileName,1,encryptAES);
                     if (resAESFileOp==0){
                         System.gc();
                         outFile.delete();
@@ -214,25 +212,39 @@ public class FileEncrypter {
 
         return 1;
     }
+    private int AES_CHECK_FLAG=0;
+    private String saveMD5="";
+    private String saveFileNameLen="";
+    private String saveFileName="";
 
-    private int AESFileOp(String encryptPath, String newPath, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadLocationException {
+    private int AESFileOp(String encryptPath, String newPath,String fileName, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadLocationException {
         InputStream is = new FileInputStream(encryptPath);
-        OutputStream out = new FileOutputStream(newPath);
-        String saveMD5;
-        int r;
-        double progress,sum=0;
+        int r=0;
+        double progress = 0,sum=0;
         File f = new File(encryptPath);
         //获取文件长度
         double fileLen = f.length();
 
         if (method==0) {//加密
             print("正在使用AES加密 >>> ");
+            OutputStream out = new FileOutputStream(newPath);
+
             //计算文件MD5
             String fileMd5 = MD5Util.md5HashCode(encryptPath);
             //写入文件MD5信息
             byte[] enMD5 = encryptAES.encrypt(fileMd5.getBytes());
             out.write(enMD5);
             out.flush();
+
+            //加密文件名
+            byte[] encryptFileName =  encryptAES.encrypt(fileName.getBytes());
+            //获取加密后的文件名长度
+            int fileNameLen = encryptFileName.length;
+            //存入名字长度
+            byte[] lenByte = encryptAES.encrypt((String.valueOf(fileNameLen)).getBytes());
+            out.write(lenByte);
+            //写入文件信息
+            out.write(encryptFileName);
 
             byte[] buffer = new byte[1024];
             while ((r = is.read(buffer)) > 0) {
@@ -247,17 +259,45 @@ public class FileEncrypter {
                     printProgress((int) (progress*100));
                 }else {
                     printProgress(100);
-                    print("\r");
-                    print("文件加密完成");
+//                    print("\r");
+//                    print("文件加密完成");
                 }
-
             }
         }else {//解密
             print("正在使用AES解密 >>>  ");
-            byte[] buffer = new byte[1040];
-            byte[] md5Buffer = new byte[48];
+            AES_DECRYPT(1,f,is,encryptAES,r,sum,progress,fileLen,newPath);
+        }
+        return 1;
+    }
+    //AES解密
+    private int AES_DECRYPT(int flag, File f, InputStream is, EncryptAES encryptAES, int r, double progress, double sum, double fileLen, String newPath){
+        byte[] buffer = new byte[1040];
+        byte[] md5Buffer = new byte[48];
+        byte[] fileNameLen = new byte[16];
+        try {
+            //读取保存的md5信息
             is.read(md5Buffer);
             saveMD5 =  new String(encryptAES.decrypt(md5Buffer));
+
+            //读取保存的文件名长度信息
+            is.read(fileNameLen);
+            saveFileNameLen = new String(encryptAES.decrypt(fileNameLen));
+            int intFileNameLen = Integer.parseInt(saveFileNameLen);
+
+            //读取保存的文件名
+            byte[] fileName = new byte[intFileNameLen];
+            is.read(fileName);
+            saveFileName = new String(encryptAES.decrypt(fileName));
+
+
+            OutputStream out = null;
+            //校验
+            if (flag==0){
+                
+            }else {//直接解密
+               out= new FileOutputStream(newPath+"\\"+saveFileName);
+
+            }
             while ((r = is.read(buffer)) > 0) {
                 byte[] temp = new byte[r];
                 System.arraycopy(buffer,0,temp,0,r);
@@ -271,24 +311,38 @@ public class FileEncrypter {
                     printProgress((int) (progress*100));
                 }else {
                     printProgress(100);
-                    print("\r");
-                    print("文件解密完成");
+                    if (flag==1){
+                        print("\r");
+                        print("文件解密完成");
+                    }
+
                 }
 
             }
-            print("解密操作完成");
-            print("正在比对文件MD5...");
-            print("文件保存MD5: "+ saveMD5);
-            //计算文件MD5
-            String fileMd5 = MD5Util.md5HashCode(newPath);
-            print("当前解密文件MD5: "+fileMd5);
-            if (saveMD5.equals(fileMd5)){
-                print("MD5比对成功!文件为原始文件");
-            }else {
-                print("MD5比对失败!文件被修改!!!");
+            is.close();
+            out.close();
+            if (flag==1){
+                print("解密操作完成");
+                print("正在比对文件MD5...");
+                print("文件保存MD5: "+ saveMD5);
+                //计算文件MD5
+                String fileMd5 = MD5Util.md5HashCode(newPath+"\\"+saveFileName);
+                print("当前解密文件MD5: "+fileMd5);
+                if (saveMD5.equals(fileMd5)){
+                    print("MD5比对成功!文件为原始文件");
+                    //删除原始文件
+                    System.gc();
+                    f.delete();
+                }else {
+                    print("MD5比对失败!文件被修改!!!");
+                }
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-//            byte[] buffer = new byte[1024];
+
+
 
         return 1;
     }
