@@ -211,6 +211,7 @@ public class EncryptDES {
             out.close();
             is.close();
         } catch (Exception e) {
+            consoleArea.append("文件解密失败");
            return 0;
         }
 
