@@ -105,15 +105,18 @@ public class EncryptDES {
         byte[] byteMD5 = cipher.doFinal(fileMd5.getBytes());
         //写入文件MD5信息
         out.write(byteMD5);
-        //加密文件名
-        byte[] fileNameByte = new byte[512];
 
+        //加密文件名
         byte[] encryptFileName =  cipher.doFinal(fileName.getBytes());
-        for (int i = 0;i<encryptFileName.length;i++){
-            fileNameByte[i] = encryptFileName[i];
-        }
+        //获取加密后的文件名长度
+        int fileNameLen = encryptFileName.length;
+//        byte[] fileNameByte = new byte[fileNameLen];
+//        System.arraycopy(encryptFileName,0,fileNameByte,0,fileNameLen);
+        //存入名字长度
+        byte[] lenByte = cipher.doFinal((String.valueOf(fileNameLen)).getBytes());
+        out.write(lenByte);
         //写入文件信息
-        out.write(fileNameByte);
+        out.write(encryptFileName);
 
         byte[] buffer = new byte[1024];
         int r;
@@ -165,16 +168,16 @@ public class EncryptDES {
             is.read(byteMD5);
             saveMD5 = new String(cipher.doFinal(byteMD5));
 
+            //获取文件名长度
+            byte[] readByteFileNameLen = new byte[8];
+            is.read(readByteFileNameLen);
+            String strFileNameLen =  new String(cipher.doFinal(readByteFileNameLen));
+            int fileNameLen = Integer.parseInt(strFileNameLen);
             //获取文件保存的文件名
-            byte[] readByteFileName = new byte[512];
+            byte[] readByteFileName = new byte[fileNameLen];
             is.read(readByteFileName);
-            int byteNum = 0;
-            for (int i = 0; readByteFileName[i]!=0; i++) {
-                byteNum ++;
-            }
-            byte[] byteFileName = new byte[byteNum];
-            System.arraycopy(readByteFileName,0,byteFileName,0,byteNum);
-            saveFileName = new String(cipher.doFinal(byteFileName));
+
+            saveFileName = new String(cipher.doFinal(readByteFileName));
            //直接解密
             if (checkFLag==0){
                 newPath += "\\"+saveFileName;
@@ -223,7 +226,7 @@ public class EncryptDES {
                 //计算文件MD5
                 String fileMd5 = MD5Util.md5HashCode(tempPath);
                 if (saveMD5.equals(fileMd5)){
-                    consoleArea.append("文件校验成功");
+                    consoleArea.append("\r\n文件校验成功");
                     File tempFile = new File(tempPath);
                     tempFile.delete();
                 }else {
