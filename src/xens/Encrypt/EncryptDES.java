@@ -45,10 +45,7 @@ public class EncryptDES {
             }
         }
     }
-    void printCheck(int num) throws BadLocationException {
-        if (consoleArea != null) {
-        }
-    }
+
     /**
      * 根据参数生成KEY
      * 使用try/catch捕获错误
@@ -74,9 +71,19 @@ public class EncryptDES {
 
     //从文件中获取到的MD5
     String saveMD5="";
-
-
-    public int encrypt(String EncryptPath,String outPath) throws Exception {
+    //从文件中获取到的保存文件名
+    String saveFileName = "";
+    //最后输出文件名
+    String outFilePath = "";
+    /**
+     *
+     * @param EncryptPath 加密地址
+     * @param outPath 加密输出地址
+     * @param fileName 文件名
+     * @return 返回1为加密成功
+     * @throws Exception
+     */
+    public int encrypt(String EncryptPath,String outPath,String fileName) throws Exception {
         start = consoleArea.getLineStartOffset(2)+14;
         end = consoleArea.getLineEndOffset(2);
 
@@ -98,6 +105,15 @@ public class EncryptDES {
         byte[] byteMD5 = cipher.doFinal(fileMd5.getBytes());
         //写入文件MD5信息
         out.write(byteMD5);
+        //加密文件名
+        byte[] fileNameByte = new byte[512];
+
+        byte[] encryptFileName =  cipher.doFinal(fileName.getBytes());
+        for (int i = 0;i<encryptFileName.length;i++){
+            fileNameByte[i] = encryptFileName[i];
+        }
+        //写入文件信息
+        out.write(fileNameByte);
 
         byte[] buffer = new byte[1024];
         int r;
@@ -122,7 +138,9 @@ public class EncryptDES {
         if (checkFile(outPath)==0){
             return 0;
         }
-
+        //文件校验成功,删除原始文件
+        File encryptPath = new File(EncryptPath);
+        encryptPath.delete();
         return 1;
     }
     public int decrypt(String decryptPath,String newPath){
@@ -134,8 +152,7 @@ public class EncryptDES {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
             InputStream is = new FileInputStream(decryptPath);//流读取文件
-            OutputStream out = new FileOutputStream(newPath);//流输出文件
-            CipherOutputStream cos = new CipherOutputStream(out, cipher);//由一个OutputStream和一个密码组成,对数据进行加密后写入
+
             File f = new File(decryptPath);
             //获取文件长度
             double fileLen = f.length();
@@ -147,10 +164,28 @@ public class EncryptDES {
             byte[] byteMD5 = new byte[40];
             is.read(byteMD5);
             saveMD5 = new String(cipher.doFinal(byteMD5));
+
+            //获取文件保存的文件名
+            byte[] readByteFileName = new byte[512];
+            is.read(readByteFileName);
+            int byteNum = 0;
+            for (int i = 0; readByteFileName[i]!=0; i++) {
+                byteNum ++;
+            }
+            byte[] byteFileName = new byte[byteNum];
+            System.arraycopy(readByteFileName,0,byteFileName,0,byteNum);
+            saveFileName = new String(cipher.doFinal(byteFileName));
+           //直接解密
+            if (checkFLag==0){
+                newPath += "\\"+saveFileName;
+
+            }
+            outFilePath = newPath;
+            OutputStream out = new FileOutputStream(newPath);//流输出文件
+            CipherOutputStream cos = new CipherOutputStream(out, cipher);//由一个OutputStream和一个密码组成,对数据进行加密后写入
             byte[] buffer = new byte[1024];
             int r;
             int n=-1;
-            double progress,sum=0;
             nNum = 0;
              while ((r = is.read(buffer)) >= 0) {
                 cos.write(buffer, 0, r);
@@ -166,7 +201,6 @@ public class EncryptDES {
                 }
                 if (nTime==0||r<512){
                     print(100);
-                    System.out.println(100);
                 }
             }
 
@@ -189,8 +223,12 @@ public class EncryptDES {
                 //计算文件MD5
                 String fileMd5 = MD5Util.md5HashCode(tempPath);
                 if (saveMD5.equals(fileMd5)){
+                    consoleArea.append("文件校验成功");
                     File tempFile = new File(tempPath);
                     tempFile.delete();
+                }else {
+                    consoleArea.append("文件校验失败");
+                    return 0;
                 }
             }
 
@@ -202,5 +240,8 @@ public class EncryptDES {
     }
     public String getSaveMD5(){
         return saveMD5;
+    }
+    public String getOutFile(){
+        return outFilePath;
     }
 }

@@ -45,25 +45,15 @@ public class FileEncrypter {
         Date start = new Date();
         print("正在加密: "+ file.getName());
         try{
-            //文件名字拼接
-
+            //加密文件名字拼接
             //拆分地址
-            String[] pathArray = EncryptPath.split("\\.");
             //存储地址到newPath
-            String newPath = pathArray[0];
-            //后缀
-            String suffix = pathArray[pathArray.length-1];
-            int num = 0;
-            int i = 1;
-            //当有多个.时,数组个数大于2
-            if (pathArray.length>2){
-                //赋值为超出2的个数
-                num = pathArray.length-2;
-                while (i<=num){
-                    newPath += "."+pathArray[i];
-                    i++;
-                }
-            }
+            String newPath = EncryptPath;
+
+            String[] fileNameArray = EncryptPath.split("\\\\");
+            String fileName = fileNameArray[fileNameArray.length-1];
+
+
             String methodName="";
             switch (method){
                 case 0: methodName="DES";break;
@@ -71,7 +61,8 @@ public class FileEncrypter {
                 case 2: methodName="SM4";break;
             }
             //拼接文件名
-            newPath += "_encrypted_"+methodName +'.'+ suffix;
+
+            newPath += "_ENCRYPTED_"+methodName;
             File outFile = new File(newPath);
             //如果当前加密文件存在,删除加密文件
             if (outFile.exists()){
@@ -80,7 +71,7 @@ public class FileEncrypter {
             switch(method){
                 case 0:
                     EncryptDES encryptDES = new EncryptDES(key,consoleArea);
-                    DESFileOp(EncryptPath,newPath,0,encryptDES);
+                    DESFileOp(EncryptPath,newPath,fileName,0,encryptDES);
 
                     break;
                 case 1:
@@ -110,33 +101,15 @@ public class FileEncrypter {
 
     public int decrypt(File file,JTextField decryptFilePath, int method, String key){
         String decryptPath = decryptFilePath.getText();
-        String newPath = "";
         Date start = new Date();
         print("正在解密: "+ file.getName());
-        //拆分地址
-        String[] pathArray = decryptPath.split("\\.");
-        //存储地址到newPath
-        newPath = pathArray[0];
-        //后缀
-        String suffix = pathArray[pathArray.length-1];
-        int num = 0;
-        int i = 1;
-        //当有多个.时,数组个数大于2
-        if (pathArray.length>2){
-            //赋值为超出2的个数
-            num = pathArray.length-2;
-            while (i<=num){
-                newPath += "."+pathArray[i];
-                i++;
-            }
-        }
-        //拼接文件名
-        newPath += "_decrypt." + suffix;
+        //获取父级地址
+        String newPath = file.getParent();
+
+        String[] fileNameArray = decryptPath.split("\\\\");
+        String fileName = fileNameArray[fileNameArray.length-1];
+
         File outFile = new File(newPath);
-        //如果当前加密文件存在,删除加密文件
-        if (outFile.exists()){
-            outFile.delete();
-        }
 
         try{
 
@@ -144,7 +117,7 @@ public class FileEncrypter {
                 case 0:
                     EncryptDES decryptDES = new EncryptDES(key,consoleArea);
 //                    decryptDES.decrypt(decryptPath,key);
-                    int resDESFileOp =  DESFileOp(decryptPath,newPath,1,decryptDES);
+                    int resDESFileOp =  DESFileOp(decryptPath,newPath,fileName,1,decryptDES);
                     if (resDESFileOp==0){
                         System.gc();
                         outFile.delete();
@@ -186,13 +159,13 @@ public class FileEncrypter {
 
         }
     }
-    private int DESFileOp(String encryptPath, String newPath, int method, EncryptDES encryptDES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
+    private int DESFileOp(String encryptPath, String newPath, String fileName,int method, EncryptDES encryptDES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
 
         String saveMD5;
         if (method==0) {//加密
             try {
                 print("正在使用DES加密 >>> ");
-                int encryptIndex = encryptDES.encrypt(encryptPath,newPath);
+                int encryptIndex = encryptDES.encrypt(encryptPath,newPath,fileName);
                 if (encryptIndex==1){
                     print("\r");
                     print("文件加密完成");
@@ -212,17 +185,23 @@ public class FileEncrypter {
                     print("正在比对文件MD5...");
                     saveMD5 = encryptDES.getSaveMD5();
                     print("文件保存MD5: "+ saveMD5);
+                    String outFile = encryptDES.getOutFile();
                     //计算文件MD5
-                    String fileMd5 = MD5Util.md5HashCode(newPath);
+                    String fileMd5 = MD5Util.md5HashCode(outFile);
                     print("当前解密文件MD5: "+fileMd5);
                     if (saveMD5.equals(fileMd5)){
                         print("MD5比对成功!文件为原始文件");
+                        //删除原始加密文件
+                        File file = new File(encryptPath);
+                        file.delete();
                     }else {
                         print("MD5比对失败!文件被修改!!!");
+                        //删除生成的被修改文件
+                        File file = new File(outFile);
+                        file.delete();
                     }
                 }
             } catch (Exception e) {
-
                 return 0;
             }
 
