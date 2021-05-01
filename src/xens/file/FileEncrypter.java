@@ -201,6 +201,9 @@ public class FileEncrypter {
                         file.delete();
                     }
                 }
+                else {//发生错误
+                    return 0;
+                }
             } catch (Exception e) {
                 return 0;
             }
