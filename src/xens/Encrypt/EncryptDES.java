@@ -8,7 +8,9 @@ import javax.swing.text.BadLocationException;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 public class EncryptDES {
@@ -24,11 +26,27 @@ public class EncryptDES {
     }
 
 
-
+    //校验标志
+    private int checkFLag = 0;
+    //n的次数
+    private int nNum = -1;
     //创建打印类
     void print(int num) throws BadLocationException {
         if (consoleArea != null) {
-             consoleArea.replaceRange(num+"%",start, consoleArea.getLineEndOffset(2));
+            if (checkFLag==0){
+                consoleArea.replaceRange(num+"%",start, consoleArea.getLineEndOffset(2));
+            }else{
+                if (num==0){
+                    consoleArea.append("\r\n正在校验文件 >>> 0%");
+                }else {
+                    consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(3)+10, consoleArea.getLineEndOffset(3));
+                }
+
+            }
+        }
+    }
+    void printCheck(int num) throws BadLocationException {
+        if (consoleArea != null) {
         }
     }
     /**
@@ -52,24 +70,7 @@ public class EncryptDES {
             throw new RuntimeException("Error initializing SqlMap class. Cause: " + e);
         }
     }
-    /**
-     * 偏移变量，固定占8位字节
-     */
-    private final static String IV_PARAMETER = "12345678";
-    /**
-     * 密钥算法
-     */
-    private static final String ALGORITHM = "DES";
-    /**
-     * 加密/解密算法-工作模式-填充模式
-     */
-    private static final String CIPHER_ALGORITHM = "DES/CBC/PKCS5Padding";
-    /**
-     * 默认编码
-     */
-    private static final String CHARSET = "utf-8";
 
-    //直接读取文件的MD5
 
     //从文件中获取到的MD5
     String saveMD5="";
@@ -80,7 +81,6 @@ public class EncryptDES {
         end = consoleArea.getLineEndOffset(2);
 
         Cipher cipher = Cipher.getInstance("DES");
-        // cipher.init(Cipher.ENCRYPT_MODE, getKey());
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         InputStream is = new FileInputStream(EncryptPath);
         OutputStream out = new FileOutputStream(outPath);
@@ -101,67 +101,105 @@ public class EncryptDES {
 
         byte[] buffer = new byte[1024];
         int r;
-        int n=0,progress = 0;
+        int n=0;
+        nNum = -1;
         while ((r = cis.read(buffer)) > 0) {
             out.write(buffer, 0, r);
             n++;
             if (nTime!=0&&n%nTime==0){
-                print(n/nTime);
+                if (nNum!= n/nTime){
+                    print(n/nTime);
+                }
             }
             if (nTime==0||r<512){
                 print(100);
             }
-//            progress =((int)((n++/time)*1000))/10.0;
-//            if ((int)progress == progress){
-//                print((int)progress);
-//            }
-//            if (r<1024){
-//                print(100);
-//
-//            }
         }
         cis.close();
         is.close();
         out.close();
-        return 1;
-    }
-    public int decrypt(String decryptPath,String newPath) throws Exception {
-        start = consoleArea.getLineStartOffset(2)+13;
-        end = consoleArea.getLineEndOffset(2);
-        Cipher cipher = Cipher.getInstance("DES");//返回实现指定转换的密码对象
-        //init使用密钥初始化此密码
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-
-        InputStream is = new FileInputStream(decryptPath);//流读取文件
-        OutputStream out = new FileOutputStream(newPath);//流输出文件
-        CipherOutputStream cos = new CipherOutputStream(out, cipher);//由一个OutputStream和一个密码组成,对数据进行加密后写入
-        File f = new File(decryptPath);
-        //获取文件长度
-        double fileLen = f.length();
-
-        //获取文件保存的MD5信息
-        byte[] byteMD5 = new byte[40];
-        is.read(byteMD5);
-        saveMD5 = new String(cipher.doFinal(byteMD5));
-        byte[] buffer = new byte[1024];
-        int r;
-        double progress,sum=0;
-        while ((r = is.read(buffer)) >= 0) {
-            cos.write(buffer, 0, r);
-            if (r==1024){
-                sum += r;
-                progress = sum / fileLen;
-                print((int) (progress*100));
-            }else {
-                print(100);
-            }
+        //对文件进行校验
+        if (checkFile(outPath)==0){
+            return 0;
         }
-        cos.close();
-        out.close();
-        is.close();
+
         return 1;
     }
+    public int decrypt(String decryptPath,String newPath){
+        try {
+            start = consoleArea.getLineStartOffset(2)+13;
+            end = consoleArea.getLineEndOffset(2);
+            Cipher cipher = Cipher.getInstance("DES");//返回实现指定转换的密码对象
+            //init使用密钥初始化此密码
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
+            InputStream is = new FileInputStream(decryptPath);//流读取文件
+            OutputStream out = new FileOutputStream(newPath);//流输出文件
+            CipherOutputStream cos = new CipherOutputStream(out, cipher);//由一个OutputStream和一个密码组成,对数据进行加密后写入
+            File f = new File(decryptPath);
+            //获取文件长度
+            double fileLen = f.length();
+            //分组加密次数
+            int allTime = (int) (fileLen/1024);
+            int nTime = (int) Math.ceil(allTime/100);
+
+            //获取文件保存的MD5信息
+            byte[] byteMD5 = new byte[40];
+            is.read(byteMD5);
+            saveMD5 = new String(cipher.doFinal(byteMD5));
+            byte[] buffer = new byte[1024];
+            int r;
+            int n=-1;
+            double progress,sum=0;
+            nNum = 0;
+             while ((r = is.read(buffer)) >= 0) {
+                cos.write(buffer, 0, r);
+                n++;
+                if (n==0&&nTime==0){
+                    print(0);
+                }
+                if (nTime!=0&&n%nTime==0){
+                    print(nNum);
+                    if (nNum<100){
+                        nNum++;
+                    }
+                }
+                if (nTime==0||r<512){
+                    print(100);
+                    System.out.println(100);
+                }
+            }
+
+
+
+            cos.close();
+            out.close();
+            is.close();
+        } catch (Exception e) {
+           return 0;
+        }
+
+        return 1;
+    }
+    public int checkFile(String outPath){
+        String tempPath = outPath+"_temp";
+        checkFLag = 1;
+        try {
+            if(decrypt(outPath,tempPath)==1){
+                //计算文件MD5
+                String fileMd5 = MD5Util.md5HashCode(tempPath);
+                if (saveMD5.equals(fileMd5)){
+                    File tempFile = new File(tempPath);
+                    tempFile.delete();
+                }
+            }
+
+        } catch (Exception e) {
+            return 0;
+        }
+
+        return 1;
+    }
     public String getSaveMD5(){
         return saveMD5;
     }

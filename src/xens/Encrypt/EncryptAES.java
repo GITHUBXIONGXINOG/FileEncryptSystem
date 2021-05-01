@@ -84,66 +84,8 @@ public class EncryptAES {
         byte[] result = cipher.doFinal(contentArray);
         return result;
     }
-//    public static void main(String[] args){
-//        String content = "你好中国中国你好";
-//        try {
-////            SecretKey secretKey = generateKey();
-////            byte[] encryptResult = encrypt(content,secretKey);
-//            System.out.println("加密后的结果为: "+new String(encryptResult,charsetName));
-//
-//            String decryptResult = decrypt(encryptResult,secretKey);
-//            System.out.println("解密后的结果为: "+decryptResult);
-//
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        } catch (InvalidKeyException e) {
-//            e.printStackTrace();
-//        } catch (NoSuchPaddingException e) {
-//            e.printStackTrace();
-//        } catch (BadPaddingException e) {
-//            e.printStackTrace();
-//        } catch (IllegalBlockSizeException | UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//    }
-    /**
-     * 将字节数组转为long<br>
-     * 如果input为null,或offset指定的剩余数组长度不足8字节则抛出异常
-     * @param input
-     * @param offset 起始偏移量
-     * @param littleEndian 输入数组是否小端模式
-     * @return
-     */
-    public static long longFrom8Bytes(byte[] input, int offset, boolean littleEndian){
-        long value=0;
-        // 循环读取每个字节通过移位运算完成long的8个字节拼装
-        for(int  count=0;count<8;++count){
-            int shift=(littleEndian?count:(7-count))<<3;
-            value |=((long)0xff<< shift) & ((long)input[offset+count] << shift);
-        }
-        return value;
-    }
-    public static long byteArrayToLong(byte[] data) throws IOException {
-        ByteArrayInputStream bai = new ByteArrayInputStream(data);
-        DataInputStream dis =new DataInputStream(bai);
-        return dis.readLong();
-    }
-    static Long convertKeys(String keys) {
-        int[] intKeys = new int[keys.length()];
-        char[] chKeys = keys.toCharArray();
-        String strKeys = "";
-        Long longKey = null;
-        for (int i = 0; i < intKeys.length; i++) {
-            if (Character.isDigit(chKeys[i])) {
-                int num = (int) chKeys[i] - (int) ('0');
-//                intKeys[i] = num;
-                strKeys+=num;
-            } else {
-//                intKeys[i] = 10;
-                int n = chKeys[i];
-                strKeys+= n;
-            }
-        }
-        return longKey;
-    }
+
+
+
+
 }
