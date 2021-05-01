@@ -98,11 +98,16 @@ public class FileEncrypter {
 
             Date end = new Date();
             long duration = (end.getTime() - start.getTime());
-            if (duration > 1000000) {
-                print("用时" + (duration) / 1000 + "s");
-            } else {
+            if (duration<=1000){
                 print("用时" + (duration) + "ms");
+            }else if(duration>1000&&duration<=60000){
+                print("用时" + (duration) / 1000 + "s");
+            }else if (duration>60000&&duration<=360000){
+                print("用时" + (duration) / 60000 + "m");
+            }else if (duration>360000){
+                print("用时" + (duration) / 360000 + "h");
             }
+
             return 1;
 
         }catch (Exception e){
@@ -161,10 +166,14 @@ public class FileEncrypter {
             }
             Date end = new Date();
             long duration = (end.getTime() - start.getTime());
-            if (duration > 1000000) {
-                print("用时" + (duration) / 1000 + "s");
-            } else {
+            if (duration<=1000){
                 print("用时" + (duration) + "ms");
+            }else if(duration>1000&&duration<=60000){
+                print("用时" + (duration) / 1000 + "s");
+            }else if (duration>60000&&duration<=360000){
+                print("用时" + (duration) / 60000 + "m");
+            }else if (duration>360000){
+                print("用时" + (duration) / 360000 + "h");
             }
             return 1;
 

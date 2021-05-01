@@ -143,11 +143,8 @@ public class MainFrame extends JFrame implements ActionListener{
                     //设置输出文本域
                     consoleArea.setText("当前选择文件大小约");
                     File f = new File(filepath);
-                    if( f.length() > 1024 ) {
-                        consoleArea.append(f.length()/1024 + "KB\r\n");
-                    }else {
-                        consoleArea.append(f.length() + "B\r\n");
-                    }
+                    consoleArea.append(byte2String(f.length()));
+
                     return true;
                 }
                 catch (Exception e) {
@@ -268,11 +265,7 @@ public class MainFrame extends JFrame implements ActionListener{
                     //设置输出文本域
                     consoleArea.setText("当前选择文件大小约");
                     File f = new File(filepath);
-                    if( f.length() > 1024 ) {
-                        consoleArea.append(f.length()/1024 + "KB\r\n");
-                    }else {
-                        consoleArea.append(f.length() + "B\r\n");
-                    }
+                    consoleArea.append(byte2String(f.length()));
                     return true;
                 }
                 catch (Exception e) {
@@ -399,11 +392,8 @@ public class MainFrame extends JFrame implements ActionListener{
                 encryptFilePath.setText(s);
                 //设置输出文本域
                 consoleArea.setText("当前选择文件大小约");
-                if( f.length() > 1024 ) {
-                    consoleArea.append(f.length()/1024 + "KB\r\n");
-                }else {
-                    consoleArea.append(f.length() + "B\r\n");
-                }
+                consoleArea.append(byte2String(f.length()));
+
             }
         }else if (e.getSource() == btnDecryptFileChooser){ //当前触发的事件发起者是文件解密选择
             //创建文件选择器,不指定文件目录,默认为文档目录
@@ -421,11 +411,8 @@ public class MainFrame extends JFrame implements ActionListener{
                 decryptFilePath.setText(s);
                 //设置输出文本域
                 consoleArea.setText("当前选择文件大小约");
-                if( f.length() > 1024 ) {
-                    consoleArea.append(f.length()/1024 + "KB\r\n");
-                }else {
-                    consoleArea.append(f.length() + "B\r\n");
-                }
+                consoleArea.append(byte2String(f.length()));
+
             }
         }else if (e.getSource() == btnEncrypt){//当前触发的事件发起者是文件加密按钮
             //将方法选择框选中的加密方法转换为String类型
@@ -488,4 +475,17 @@ public class MainFrame extends JFrame implements ActionListener{
 
     }
 
+    //存储单位转换
+    private String byte2String(Long num){
+        if(num < 1024 ){
+            return num + "B\r\n";
+        } else if (num >= 1024 && num < Math.pow(1024,2) ){
+            return new java.text.DecimalFormat("#.00").format(num/1024) + "KB\r\n";
+        } else if (num >= Math.pow(1024,2) && num < Math.pow(1024,3)){
+            return new java.text.DecimalFormat("#.00").format(num/Math.pow(1024,2)) + "MB\r\n";
+        } else if (num >= Math.pow(1024,3) ){
+            return new java.text.DecimalFormat("#.00").format(num/Math.pow(1024,3)) + "GB\r\n";
+        }
+        return "";
+    }
 }
