@@ -35,7 +35,7 @@ public class FileEncrypter {
     //创建打印进度类
     void printProgress(int num) throws BadLocationException {
         if (consoleArea != null) {
-            consoleArea.replaceRange(String.valueOf(num),consoleArea.getLineStartOffset(2)+14, consoleArea.getLineEndOffset(2));
+            consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(2)+14, consoleArea.getLineEndOffset(2));
         }
     }
 
@@ -271,7 +271,7 @@ public class FileEncrypter {
 
             }
         }else {//解密
-            print("正在使用AES解密 >>> ");
+            print("正在使用AES解密 >>>  ");
             byte[] buffer = new byte[1040];
             byte[] md5Buffer = new byte[48];
             is.read(md5Buffer);
