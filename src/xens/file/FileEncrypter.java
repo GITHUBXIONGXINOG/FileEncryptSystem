@@ -29,14 +29,26 @@ public class FileEncrypter {
             consoleArea.append("\r\n");
         }
     }
+    //输出域行开始
+    private int start;
+    //输出域行结束
+    private int end;
     //创建打印进度类
-
     void printProgress(int num) throws BadLocationException {
         if (consoleArea != null) {
+            String strNum = num+"%";
+            while (strNum.length()<4){
+                // **0%   *10% 100%
+                strNum = " "+strNum;
+            }
             if (AES_CHECK_FLAG==0){
-                consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(2)+14, consoleArea.getLineEndOffset(2));
+//                consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(2)+14, consoleArea.getLineEndOffset(2));
+                consoleArea.replaceRange(strNum,start, end);
+
             }else {//校验输出
-                consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(3)+11, consoleArea.getLineEndOffset(3));
+//                consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(3)+11, consoleArea.getLineEndOffset(3));
+                consoleArea.replaceRange(strNum,start, end);
+
             }
         }
     }
@@ -196,6 +208,7 @@ public class FileEncrypter {
 
         }
     }
+    //DES文件操作
     private int DESFileOp(String encryptPath, String newPath, String fileName,int method, EncryptDES encryptDES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
 
         String saveMD5;
@@ -259,7 +272,9 @@ public class FileEncrypter {
     //AES文件操作
     private int AESFileOp(String encryptPath, String newPath,String fileName, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadLocationException {
         if (method==0) {//加密
-            print("正在使用AES加密 >>> ");
+            print("正在使用AES加密 >>>    ");
+            end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
+            start = end - 4;
             AES_ENCRYPT(encryptPath,newPath,fileName,encryptAES);
             AES_CHECK_FLAG = 1;
             //文件校验成功
@@ -274,6 +289,8 @@ public class FileEncrypter {
         }
         return 1;
     }
+    //n的次数
+    private int nNum = -1;
     //AES加密
     private int AES_ENCRYPT(String encryptPath, String newPath, String fileName, EncryptAES encryptAES){
         try {
@@ -284,6 +301,9 @@ public class FileEncrypter {
             File f = new File(encryptPath);
             //获取文件长度
             double fileLen = f.length();
+            //分组加密次数
+            int allTime = (int) Math.ceil((fileLen/1024));
+            int nTime = allTime/100;
             //计算文件MD5
             String fileMd5 = MD5Util.md5HashCode(encryptPath);
             //写入文件MD5信息
@@ -302,19 +322,35 @@ public class FileEncrypter {
             out.write(encryptFileName);
 
             byte[] buffer = new byte[1024];
+            nNum = -1;
+            int n=0;
             while ((r = is.read(buffer)) > 0) {
                 byte[] temp = new byte[r];
                 System.arraycopy(buffer,0,temp,0,r);
+                //使用aes加密
                 byte[] res = encryptAES.encrypt(temp);
                 out.write(res);
                 out.flush();
-                if (r==1024){
-                    sum += r;
-                    progress = sum / fileLen;
-                    printProgress((int) (progress*100));
-                }else {
+                if (nTime!=0&&n%nTime==0){
+                    if (nTime!=n/nTime){
+                        nNum++;
+                        if (nNum<=100){
+                            printProgress(nNum);
+                        }
+                    }
+                }
+                if (nTime==0||r<512){
                     printProgress(100);
                 }
+                n++;
+//                if (r==1024){
+//                    sum += r;
+//                    progress = sum / fileLen;
+//                    printProgress((int) (progress*100));
+//                }else {
+//                    printProgress(100);
+//                }
+
             }
         } catch (Exception e) {
             return 0;
@@ -335,6 +371,9 @@ public class FileEncrypter {
             File f = new File(encryptPath);
             //获取文件长度
             double fileLen = f.length();
+            //分组解密次数
+            int allTime = (int) Math.ceil((fileLen/1024));
+            int nTime = allTime/100;
             //读取保存的md5信息
             is.read(md5Buffer);
             saveMD5 =  new String(encryptAES.decrypt(md5Buffer));
@@ -353,13 +392,16 @@ public class FileEncrypter {
 
             //校验
             if (flag==0){
-                print("\r\n正在校验文件 >>> 0%");
+                print("正在校验文件 >>>  0%");
+                end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
+                start = end - 4;
                 out = new FileOutputStream(newPath+"_TEMP");
             }else {//直接解密
                out= new FileOutputStream(newPath+"\\"+saveFileName);
 
             }
-
+            nNum = -1;
+            int n=0;
             while ((r = is.read(buffer)) > 0) {
                 byte[] temp = new byte[r];
                 System.arraycopy(buffer,0,temp,0,r);
@@ -367,14 +409,18 @@ public class FileEncrypter {
                 byte[] res =  encryptAES.decrypt(temp);
                 out.write(res );
                 out.flush();
-                if (r==1040){
-                    sum += r;
-                    progress = sum / fileLen;
-                    printProgress((int) (progress*100));
-                }else {
+                if (nTime!=0&&n%nTime==0){
+                    if (nTime!=n/nTime){
+                        nNum++;
+                        if (nNum<=100){
+                            printProgress(nNum);
+                        }
+                    }
+                }
+                if (nTime==0||r<512){
                     printProgress(100);
                 }
-
+                n++;
             }
             is.close();
             out.close();
@@ -393,13 +439,13 @@ public class FileEncrypter {
                 }else {
                     print("MD5比对失败!文件被修改!!!");
                 }
-            }else {
+            }else {//校验文件
                 //计算文件MD5
                 String tempFileName = newPath+"_TEMP";
                 File tempFile = new File(tempFileName);
                 String fileMd5 = MD5Util.md5HashCode(tempFileName);
                 if (saveMD5.equals(fileMd5)){
-                    print("\r\n文件校验成功");
+                    print("文件校验成功√");
                     //删除原始文件
                     System.gc();
                     tempFile.delete();
