@@ -50,9 +50,19 @@ public class FileEncrypter {
             }
         }
     }
-    public int encrypt(File file, String encryptFilePath, int method, String key){
+    private int index;
+    /**
+     *
+     * @param index 第几个文件
+     * @param file 当前要加密的文件File
+     * @param encryptFilePath 当前要加密的文件地址
+     * @param method 加密方法
+     * @param key 加密密钥
+     * @return
+     */
+    public int encrypt(int index, File file, String encryptFilePath, int method, String key){
 //        String EncryptPath = encryptFilePath.getText();
-
+        this.index = index;
         Date start = new Date();
         print("正在加密: "+ file.getName());
         try{
@@ -81,7 +91,7 @@ public class FileEncrypter {
             }
             switch(method){
                 case 0:
-                    EncryptDES encryptDES = new EncryptDES(key,consoleArea);
+                    EncryptDES encryptDES = new EncryptDES(key,consoleArea,index);
                     DESFileOp(encryptFilePath,newPath,fileName,0,encryptDES);
 
                     break;
@@ -107,7 +117,7 @@ public class FileEncrypter {
             }else if (duration>360000){
                 print("用时" + (duration) / 360000 + "h");
             }
-
+            print("--------------------------------------------------------------------------");
             return 1;
 
         }catch (Exception e){
@@ -131,7 +141,7 @@ public class FileEncrypter {
 
              switch(method){
                 case 0:
-                    EncryptDES decryptDES = new EncryptDES(key,consoleArea);
+                    EncryptDES decryptDES = new EncryptDES(key,consoleArea,index);
 //                    decryptDES.decrypt(decryptPath,key);
                     int resDESFileOp =  DESFileOp(decryptFilePath,newPath,fileName,1,decryptDES);
                     if (resDESFileOp==0){
@@ -189,14 +199,15 @@ public class FileEncrypter {
         String saveMD5;
         if (method==0) {//加密
             try {
-                print("正在使用DES加密 >>> ");
+                print("正在使用DES加密 >>>   \r\n");
                 int encryptIndex = encryptDES.encrypt(encryptPath,newPath,fileName);
                 if (encryptIndex==1){
                     print("\r");
-                    print("文件加密完成");
+                    print("文件加密完成√");
                 }
             } catch (Exception e) {
                 print("文件加密失败");
+                System.out.println(e);
                 return 0;
             }
 

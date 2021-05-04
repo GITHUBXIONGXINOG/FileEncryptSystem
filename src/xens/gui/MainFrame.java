@@ -303,7 +303,6 @@ public class MainFrame extends JFrame implements ActionListener{
                 return false;
             }
         });
-//        decryptFilePath.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
         this.add(decryptFilePath);
 
@@ -372,6 +371,7 @@ public class MainFrame extends JFrame implements ActionListener{
         consoleArea.setEditable(false);
         Font font = new Font("宋体",Font.PLAIN,18);
         consoleArea.setFont(font);
+        consoleArea.setLineWrap(true);
         //滚动面板
         JScrollPane consolePanel = new JScrollPane(consoleArea);
         //分别设置水平和垂直滚动条出现方式

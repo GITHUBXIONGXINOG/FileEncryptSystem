@@ -54,7 +54,7 @@ public class EncryptThread extends Thread {
             btnDecrypt.setEnabled(false);
 
             try{
-                fileEncrypter.encrypt(file,path, encryptMethod.getSelectedIndex(),encryptKey.getText());
+                fileEncrypter.encrypt(index,file,path, encryptMethod.getSelectedIndex(),encryptKey.getText());
             }catch (Exception e){
                 JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
             }

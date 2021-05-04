@@ -18,11 +18,12 @@ public class EncryptDES {
     //创建输出域
     JTextArea consoleArea;
     int start,end;
-
-    //    创建共有的EncryptDES类,可以被该类的和非该类的任何成员访问
-    public EncryptDES(String strKey,JTextArea consoleArea) throws BadLocationException {//传入输入密钥,和输出域
+    //第几个文件
+    private int index=0;
+     public EncryptDES(String strKey,JTextArea consoleArea,int index) throws BadLocationException {//传入输入密钥,和输出域
          getKey(strKey);
         this.consoleArea = consoleArea;
+        this.index = index;
     }
 
 
@@ -34,12 +35,26 @@ public class EncryptDES {
     void print(int num) throws BadLocationException {
         if (consoleArea != null) {
             if (checkFLag==0){
-                consoleArea.replaceRange(num+"%",start, consoleArea.getLineEndOffset(2));
-            }else{
+                String strNum = num+"%";
+                while (strNum.length()<4){
+                    // **0%   *10% 100%
+                    strNum = " "+strNum;
+                }
+                   consoleArea.replaceRange(strNum,start,end);
+//                consoleArea.append(num+"%");
+            }else{//校验文件
                 if (num==0){
-                    consoleArea.append("\r\n正在校验文件 >>> 0%");
+                    consoleArea.append("正在校验文件 >>>     ");
+                    end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-1);
+                    start = end - 4;
                 }else {
-                    consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(3)+10, consoleArea.getLineEndOffset(3));
+                    String strNum = num+"%";
+                    while (strNum.length()<4){
+                        // **0%   *10% 100%
+                        strNum = " "+strNum;
+                    }
+                    consoleArea.replaceRange(strNum,start,end);
+
                 }
 
             }
@@ -84,9 +99,8 @@ public class EncryptDES {
      * @throws Exception
      */
     public int encrypt(String EncryptPath,String outPath,String fileName) throws Exception {
-        start = consoleArea.getLineStartOffset(2)+14;
-        end = consoleArea.getLineEndOffset(2);
-
+        end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
+        start = end - 4;
         Cipher cipher = Cipher.getInstance("DES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         InputStream is = new FileInputStream(EncryptPath);
@@ -122,15 +136,19 @@ public class EncryptDES {
         nNum = -1;
         while ((r = cis.read(buffer)) > 0) {
             out.write(buffer, 0, r);
-            n++;
+
             if (nTime!=0&&n%nTime==0){
                 if (nNum!= n/nTime){
-                    print(n/nTime);
+                    nNum++;
+                    if (nNum<100){
+                        print(nNum);
+                    }
                 }
             }
             if (nTime==0||r<512){
                 print(100);
             }
+            n++;
         }
         cis.close();
         is.close();
@@ -217,15 +235,16 @@ public class EncryptDES {
 
         return 1;
     }
+    //校验文件
     public int checkFile(String outPath){
-        String tempPath = outPath+"_temp";
-        checkFLag = 1;
         try {
+            String tempPath = outPath+"_temp";
+            checkFLag = 1;
             if(decrypt(outPath,tempPath)==1){
                 //计算文件MD5
                 String fileMd5 = MD5Util.md5HashCode(tempPath);
                 if (saveMD5.equals(fileMd5)){
-                    consoleArea.append("\r\n文件校验成功");
+                    consoleArea.append("\r\n文件校验成功√");
                     File tempFile = new File(tempPath);
                     tempFile.delete();
                 }else {
