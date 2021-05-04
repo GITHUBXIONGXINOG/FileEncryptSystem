@@ -308,8 +308,17 @@ public class FileEncrypter {
             int nTime = allTime/100;
             //计算文件MD5
             String fileMd5 = MD5Util.md5HashCode(encryptPath);
-            //写入文件MD5信息
+
+            //MD5信息加密信息
             byte[] enMD5 = encryptAES.encrypt(fileMd5.getBytes());
+            //MD5的长度
+            String len = String.valueOf(enMD5.length);
+            //16位
+            byte[] byteMD5Len = encryptAES.encrypt(len.getBytes());
+            //写入MD5长度
+            out.write(byteMD5Len);
+            out.flush();
+            //写入MD5信息
             out.write(enMD5);
             out.flush();
 
@@ -345,13 +354,7 @@ public class FileEncrypter {
                     printProgress(100);
                 }
                 n++;
-//                if (r==1024){
-//                    sum += r;
-//                    progress = sum / fileLen;
-//                    printProgress((int) (progress*100));
-//                }else {
-//                    printProgress(100);
-//                }
+
 
             }
         } catch (Exception e) {
@@ -363,7 +366,6 @@ public class FileEncrypter {
     //AES解密
     private int AES_DECRYPT(int flag, String encryptPath, String newPath, EncryptAES encryptAES){
         byte[] buffer = new byte[1040];
-        byte[] md5Buffer = new byte[48];
         byte[] fileNameLen = new byte[16];
         int r=0;
         try {
@@ -376,6 +378,15 @@ public class FileEncrypter {
             //分组解密次数
             int allTime = (int) Math.ceil((fileLen/1024));
             int nTime = allTime/100;
+
+            //读取保存的md5长度
+            byte[] md5LenBuffer = new byte[16];
+            is.read(md5LenBuffer);
+//            byte[] md5LenTemp = encryptAES.decrypt(md5LenBuffer);
+//            String md5LenStr = new String(md5LenTemp);
+            int md5len = Integer.parseInt(new String(encryptAES.decrypt(md5LenBuffer)));
+            byte[] md5Buffer = new byte[md5len];
+
             //读取保存的md5信息
             is.read(md5Buffer);
             saveMD5 =  new String(encryptAES.decrypt(md5Buffer));

@@ -174,11 +174,7 @@ public class EncryptDES {
         encryptPath.delete();
         return 1;
     }
-    //判断str是否是数字
-    public static boolean isInteger(String str) {
-        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-        return pattern.matcher(str).matches();
-    }
+
     public int decrypt(String decryptPath,String newPath){
         try {
             end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
@@ -201,7 +197,6 @@ public class EncryptDES {
             is.read(byteMD5Len);
             String strMD5Len = new String(cipher.doFinal(byteMD5Len));
             int MD5Len = Integer.parseInt(strMD5Len);
-//            byte[] byteMD5 = new byte[32];
 
             byte[] byteMD5 = new byte[MD5Len];
 
