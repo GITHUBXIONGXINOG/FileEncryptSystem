@@ -12,6 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.regex.Pattern;
 
 public class EncryptDES {
     SecretKey secretKey;//建立key对象,需要定义密钥算法,编码,编码密钥的格式
@@ -117,9 +118,17 @@ public class EncryptDES {
         //计算文件MD5
         String fileMd5 = MD5Util.md5HashCode(EncryptPath);
         byte[] byteMD5 = cipher.doFinal(fileMd5.getBytes());
+        //MD5的长度
+        String len = String.valueOf(byteMD5.length);
+        //8位
+        byte[] byteMD5Len = cipher.doFinal(len.getBytes());
+        //写入MD5长度
+        out.write(byteMD5Len);
+        out.flush();
+
         //写入文件MD5信息
         out.write(byteMD5);
-
+        out.flush();
         //加密文件名
         byte[] encryptFileName =  cipher.doFinal(fileName.getBytes());
         //获取加密后的文件名长度
@@ -127,8 +136,11 @@ public class EncryptDES {
         //存入名字长度
         byte[] lenByte = cipher.doFinal((String.valueOf(fileNameLen)).getBytes());
         out.write(lenByte);
+        out.flush();
+
         //写入文件信息
         out.write(encryptFileName);
+        out.flush();
 
         byte[] buffer = new byte[1024];
         int r;
@@ -162,6 +174,11 @@ public class EncryptDES {
         encryptPath.delete();
         return 1;
     }
+    //判断str是否是数字
+    public static boolean isInteger(String str) {
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
+    }
     public int decrypt(String decryptPath,String newPath){
         try {
             end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
@@ -180,7 +197,14 @@ public class EncryptDES {
             int nTime = (int) Math.ceil(allTime/100);
 
             //获取文件保存的MD5信息
-            byte[] byteMD5 = new byte[40];
+            byte[] byteMD5Len = new byte[8];
+            is.read(byteMD5Len);
+            String strMD5Len = new String(cipher.doFinal(byteMD5Len));
+            int MD5Len = Integer.parseInt(strMD5Len);
+//            byte[] byteMD5 = new byte[32];
+
+            byte[] byteMD5 = new byte[MD5Len];
+
             is.read(byteMD5);
             saveMD5 = new String(cipher.doFinal(byteMD5));
 
@@ -188,7 +212,7 @@ public class EncryptDES {
             byte[] readByteFileNameLen = new byte[8];
             is.read(readByteFileNameLen);
             String strFileNameLen =  new String(cipher.doFinal(readByteFileNameLen));
-            int fileNameLen = Integer.parseInt(strFileNameLen);
+            int fileNameLen= Integer.parseInt(strFileNameLen);
             //获取文件保存的文件名
             byte[] readByteFileName = new byte[fileNameLen];
             is.read(readByteFileName);
@@ -230,6 +254,7 @@ public class EncryptDES {
             is.close();
         } catch (Exception e) {
             consoleArea.append("文件解密失败");
+            System.out.println(e);
            return 0;
         }
 
