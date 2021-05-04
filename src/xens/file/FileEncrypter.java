@@ -50,8 +50,8 @@ public class FileEncrypter {
             }
         }
     }
-    public int encrypt(File file,JTextField encryptFilePath, int method, String key){
-        String EncryptPath = encryptFilePath.getText();
+    public int encrypt(File file, String encryptFilePath, int method, String key){
+//        String EncryptPath = encryptFilePath.getText();
 
         Date start = new Date();
         print("正在加密: "+ file.getName());
@@ -59,9 +59,9 @@ public class FileEncrypter {
             //加密文件名字拼接
             //拆分地址
             //存储地址到newPath
-            String newPath = EncryptPath;
+            String newPath = encryptFilePath;
 
-            String[] fileNameArray = EncryptPath.split("\\\\");
+            String[] fileNameArray = encryptFilePath.split("\\\\");
             String fileName = fileNameArray[fileNameArray.length-1];
 
 
@@ -82,16 +82,16 @@ public class FileEncrypter {
             switch(method){
                 case 0:
                     EncryptDES encryptDES = new EncryptDES(key,consoleArea);
-                    DESFileOp(EncryptPath,newPath,fileName,0,encryptDES);
+                    DESFileOp(encryptFilePath,newPath,fileName,0,encryptDES);
 
                     break;
                 case 1:
                     EncryptAES encryptAES = new EncryptAES(key);
-                    AESFileOp(EncryptPath,newPath,fileName,0,encryptAES);
+                    AESFileOp(encryptFilePath,newPath,fileName,0,encryptAES);
                     break;
                 case 2:
                     EncrySM4 encrySM4 = new EncrySM4(key);
-                    SM4FileOp(EncryptPath,newPath,fileName,0,encrySM4);
+                    SM4FileOp(encryptFilePath,newPath,fileName,0,encrySM4);
                     break;
             }
 
@@ -115,14 +115,14 @@ public class FileEncrypter {
         }
     }
 
-    public int decrypt(File file,JTextField decryptFilePath, int method, String key){
-        String decryptPath = decryptFilePath.getText();
+    public int decrypt(File file,String decryptFilePath, int method, String key){
+//        String decryptPath = decryptFilePath.getText();
         Date start = new Date();
         print("正在解密: "+ file.getName());
         //获取父级地址
         String newPath = file.getParent();
 
-        String[] fileNameArray = decryptPath.split("\\\\");
+        String[] fileNameArray = decryptFilePath.split("\\\\");
         String fileName = fileNameArray[fileNameArray.length-1];
 
         File outFile = new File(newPath);
@@ -133,7 +133,7 @@ public class FileEncrypter {
                 case 0:
                     EncryptDES decryptDES = new EncryptDES(key,consoleArea);
 //                    decryptDES.decrypt(decryptPath,key);
-                    int resDESFileOp =  DESFileOp(decryptPath,newPath,fileName,1,decryptDES);
+                    int resDESFileOp =  DESFileOp(decryptFilePath,newPath,fileName,1,decryptDES);
                     if (resDESFileOp==0){
                         System.gc();
                         outFile.delete();
@@ -142,7 +142,7 @@ public class FileEncrypter {
                     break;
                 case 1:
                     EncryptAES encryptAES = new EncryptAES(key);
-                    int resAESFileOp = AESFileOp(decryptPath,newPath,fileName,1,encryptAES);
+                    int resAESFileOp = AESFileOp(decryptFilePath,newPath,fileName,1,encryptAES);
                     if (resAESFileOp==0){
                         System.gc();
                         outFile.delete();
@@ -153,7 +153,7 @@ public class FileEncrypter {
                     break;
                 case 2:
                     EncrySM4 encrySM4 = new EncrySM4(key);
-                    int resSM4FileOp = SM4FileOp(decryptPath,newPath,fileName,1,encrySM4);
+                    int resSM4FileOp = SM4FileOp(decryptFilePath,newPath,fileName,1,encrySM4);
                     if (resSM4FileOp==0){
                         System.gc();
                         outFile.delete();
@@ -197,7 +197,7 @@ public class FileEncrypter {
                 }
             } catch (Exception e) {
                 print("文件加密失败");
-                e.printStackTrace();
+                return 0;
             }
 
         }else {//解密

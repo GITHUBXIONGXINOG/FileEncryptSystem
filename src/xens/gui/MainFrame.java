@@ -14,6 +14,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MainFrame extends JFrame implements ActionListener{
     //使用serialVersionUID序列化实体类来判断版本一致,默认是1L
@@ -138,12 +140,20 @@ public class MainFrame extends JFrame implements ActionListener{
                         filepath = filepath.substring(0, filepath.length() - 1);
                     }
                     System.out.println(filepath);
+                    String[] pathList = filepath.replace(", ",",").split(",");
                     //添加到文本框
                     encryptFilePath.setText(filepath);
-                    //设置输出文本域
-                    consoleArea.setText("当前选择文件大小约");
-                    File f = new File(filepath);
-                    consoleArea.append(byte2String(f.length()));
+                    int len = pathList.length;
+                    if (len==1){
+                        //设置输出文本域
+                        consoleArea.setText("当前选择文件大小约");
+                        File f = new File(filepath);
+                        consoleArea.append(byte2String(f.length()));
+                    }else if (len > 1){
+                        //设置输出文本域
+                        consoleArea.setText("当前选择文件数量为:"+len+"\r\n");
+                    }
+
 
                     return true;
                 }
@@ -262,10 +272,19 @@ public class MainFrame extends JFrame implements ActionListener{
                     }
                     //添加到文本框
                     decryptFilePath.setText(filepath);
-                    //设置输出文本域
-                    consoleArea.setText("当前选择文件大小约");
-                    File f = new File(filepath);
-                    consoleArea.append(byte2String(f.length()));
+                    String[] pathList = filepath.replace(", ",",").split(",");
+                    //添加到文本框
+                    encryptFilePath.setText(filepath);
+                    int len = pathList.length;
+                    if (len==1){
+                        //设置输出文本域
+                        consoleArea.setText("当前选择文件大小约");
+                        File f = new File(filepath);
+                        consoleArea.append(byte2String(f.length()));
+                    }else if (len > 1){
+                        //设置输出文本域
+                        consoleArea.setText("当前选择文件数量为:"+len+"\r\n");
+                    }
                     return true;
                 }
                 catch (Exception e) {
@@ -426,6 +445,8 @@ public class MainFrame extends JFrame implements ActionListener{
             }
             //创建新的加密线程,并传入对应的信息,使用start()调用新线程
             new EncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
+
+//            new EncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
         }else if(e.getSource() == btnDecrypt){//当前触发的事件发起者是文件解密按钮
             //将方法选择框选中的加密方法转换为String类型
             String.valueOf(encryptMethod.getSelectedItem());
