@@ -164,8 +164,8 @@ public class EncryptDES {
     }
     public int decrypt(String decryptPath,String newPath){
         try {
-            start = consoleArea.getLineStartOffset(2)+13;
-            end = consoleArea.getLineEndOffset(2);
+            end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
+            start = end - 4;
             Cipher cipher = Cipher.getInstance("DES");//返回实现指定转换的密码对象
             //init使用密钥初始化此密码
             cipher.init(Cipher.DECRYPT_MODE, secretKey);

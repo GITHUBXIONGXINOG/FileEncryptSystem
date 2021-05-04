@@ -273,8 +273,6 @@ public class MainFrame extends JFrame implements ActionListener{
                     //添加到文本框
                     decryptFilePath.setText(filepath);
                     String[] pathList = filepath.replace(", ",",").split(",");
-                    //添加到文本框
-                    encryptFilePath.setText(filepath);
                     int len = pathList.length;
                     if (len==1){
                         //设置输出文本域

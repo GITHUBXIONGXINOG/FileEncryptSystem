@@ -53,12 +53,27 @@ public class DecryptThread extends Thread {
             }catch (Exception e){
                 JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
             }
-            if (resIndex == 1){//解密成功
-                //显示面板
-                JOptionPane.showMessageDialog(jf,"文件解密成功!","解密成功",JOptionPane.PLAIN_MESSAGE);
+            if (listLen==1){
+                if (resIndex == 1){//解密成功
+                    //显示面板
+                    JOptionPane.showMessageDialog(jf,"文件解密成功!","解密成功",JOptionPane.PLAIN_MESSAGE);
+                }else {
+                    JOptionPane.showMessageDialog(jf,"文件解密出现错误,请检查加密方式和密码...","解密错误",JOptionPane.WARNING_MESSAGE);
+                }
             }else {
-                JOptionPane.showMessageDialog(jf,"文件解密出现错误,请检查加密方式和密码...","解密错误",JOptionPane.WARNING_MESSAGE);
+                if (resIndex == 1){//解密成功
+                    consoleArea.append("文件解密成功!");
+                    if (index==listLen-1){
+                          JOptionPane.showMessageDialog(jf,"文件解密成功!","解密成功",JOptionPane.PLAIN_MESSAGE);
+                    }
+                }else {
+                    consoleArea.append("文件解密失败!");
+                    if (index==listLen-1){
+                        JOptionPane.showMessageDialog(jf,"文件解密出现错误,请检查加密方式和密码...","解密错误",JOptionPane.WARNING_MESSAGE);
+                    }
+                }
             }
+
 
         }
 

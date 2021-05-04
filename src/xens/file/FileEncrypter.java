@@ -185,6 +185,8 @@ public class FileEncrypter {
             }else if (duration>360000){
                 print("用时" + (duration) / 360000 + "h");
             }
+            print("--------------------------------------------------------------------------");
+
             return 1;
 
         }catch (Exception e){
@@ -216,8 +218,7 @@ public class FileEncrypter {
             try {
                 int encryptIndex = encryptDES.decrypt(encryptPath,newPath);
                 if (encryptIndex==1){
-                    print("\r\n");
-                    print("解密操作完成");
+                    print("解密操作完成√");
                     print("正在比对文件MD5...");
                     saveMD5 = encryptDES.getSaveMD5();
                     print("文件保存MD5: "+ saveMD5);
@@ -226,7 +227,7 @@ public class FileEncrypter {
                     String fileMd5 = MD5Util.md5HashCode(outFile);
                     print("当前解密文件MD5: "+fileMd5);
                     if (saveMD5.equals(fileMd5)){
-                        print("MD5比对成功!文件为原始文件");
+                        print("MD5比对成功!文件为原始文件√");
                         //删除原始加密文件
                         File file = new File(encryptPath);
                         file.delete();
@@ -547,14 +548,14 @@ public class FileEncrypter {
             is.close();
             out.close();
             if (SM4_FLAG==0){
-                print("\r\n解密操作完成");
+                print("\r\n解密操作完成√");
                 print("正在比对文件MD5...");
                 print("文件保存MD5: "+ saveMD5);
                 //计算文件MD5
                 String fileMd5 = MD5Util.md5HashCode(newPath+"\\"+saveFileName);
                 print("当前解密文件MD5: "+fileMd5);
                 if (saveMD5.equals(fileMd5)){
-                    print("MD5比对成功!文件为原始文件");
+                    print("MD5比对成功!文件为原始文件√");
                     f.delete();
                 }else {
                     print("MD5比对失败!文件被修改!!!");
