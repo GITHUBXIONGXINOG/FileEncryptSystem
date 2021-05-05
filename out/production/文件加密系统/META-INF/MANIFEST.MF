@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: xens.gui.MainFrame
+Class-Path: bcprov-ext-jdk15on-1.68.jar hutool-all-5.6.3.jar
+

@@ -5,7 +5,10 @@ import xens.file.FileEncrypter;
 import javax.swing.*;
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
+
+import static xens.file.FileEncrypter.TimeFormat;
 
 public class EncryptThread extends Thread {
     JFrame jf;//JFrame框架
@@ -15,6 +18,7 @@ public class EncryptThread extends Thread {
     JTextField encryptKey;//加密密钥
     JComboBox<String> encryptMethod;//加密方法
     JTextArea consoleArea;//输出域
+    int resEncrypt=0;//加密结果 0为出错,1为成功
     public EncryptThread(JFrame jf, JButton btnEncrypt, JButton btnDecrypt, JTextField encryptFilePath, JTextField encryptKey, JComboBox<String> encryptMethod, JTextArea consoleArea){
         this.jf = jf;
         this.btnEncrypt = btnEncrypt;
@@ -34,6 +38,7 @@ public class EncryptThread extends Thread {
             String[] pathList = EncryptPath.split(",");
             //获取数组长度
             int listLen = pathList.length;
+        Date start = new Date();
         for (int i = 0; i < listLen; i++) {
             final int index = i;
             final String path = pathList[index].trim();
@@ -52,17 +57,28 @@ public class EncryptThread extends Thread {
             //设置加密中禁用按钮
             btnEncrypt.setEnabled(false);
             btnDecrypt.setEnabled(false);
-
             try{
-                fileEncrypter.encrypt(index,file,path, encryptMethod.getSelectedIndex(),encryptKey.getText());
+                resEncrypt=fileEncrypter.encrypt(index,file,path, encryptMethod.getSelectedIndex(),encryptKey.getText());
+
             }catch (Exception e){
                 JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
             }
-        }
+            consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
 
-            //显示面板
-            JOptionPane.showMessageDialog(jf,"文件加密成功!","加密成功",JOptionPane.PLAIN_MESSAGE);
-            //设置按钮可用
+        }
+            if (resEncrypt==0){
+                consoleArea.append("文件加密失败!");
+                JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
+            }else {
+                consoleArea.append("文件加密成功!");
+                //显示面板
+                JOptionPane.showMessageDialog(jf,"文件加密成功!","加密成功",JOptionPane.PLAIN_MESSAGE);
+            }
+            Date end = new Date();
+            consoleArea.append("\r\n加密总耗时:"+TimeFormat(end.getTime() - start.getTime()));
+            consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
+
+        //设置按钮可用
             btnEncrypt.setEnabled(true);
             btnDecrypt.setEnabled(true);
 

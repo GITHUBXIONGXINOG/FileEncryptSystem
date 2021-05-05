@@ -28,6 +28,8 @@ public class FileEncrypter {
             consoleArea.append(str);
             consoleArea.append("\r\n");
         }
+        consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
+
     }
     //输出域行开始
     private int start;
@@ -52,16 +54,7 @@ public class FileEncrypter {
             }
         }
     }
-    //SM4打印
-    void sm4Print(int num) throws BadLocationException {
-        if (consoleArea != null) {
-            if (SM4_FLAG==0){
-                consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(2)+14, consoleArea.getLineEndOffset(2));
-            }else {//校验输出
-                consoleArea.replaceRange(num+"%",consoleArea.getLineStartOffset(3)+11, consoleArea.getLineEndOffset(3));
-            }
-        }
-    }
+
     private int index;
     /**
      *
@@ -105,30 +98,26 @@ public class FileEncrypter {
                 case 0:
                     EncryptDES encryptDES = new EncryptDES(key,consoleArea,index);
                     DESFileOp(encryptFilePath,newPath,fileName,0,encryptDES);
+                    consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
 
                     break;
                 case 1:
                     EncryptAES encryptAES = new EncryptAES(key);
                     AESFileOp(encryptFilePath,newPath,fileName,0,encryptAES);
+                    consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
+
                     break;
                 case 2:
                     EncrySM4 encrySM4 = new EncrySM4(key);
                     SM4FileOp(encryptFilePath,newPath,fileName,0,encrySM4);
+                    consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
+
                     break;
             }
 
 
             Date end = new Date();
-            long duration = (end.getTime() - start.getTime());
-            if (duration<=1000){
-                print("用时" + (duration) + "ms");
-            }else if(duration>1000&&duration<=60000){
-                print("用时" + (duration) / 1000 + "s");
-            }else if (duration>60000&&duration<=360000){
-                print("用时" + (duration) / 60000 + "m");
-            }else if (duration>360000){
-                print("用时" + (duration) / 360000 + "h");
-            }
+            print(TimeFormat(end.getTime() - start.getTime()));
             print("--------------------------------------------------------------------------");
             return 1;
 
@@ -168,7 +157,7 @@ public class FileEncrypter {
                     if (resAESFileOp==0){
                         System.gc();
                         outFile.delete();
-                        print("文件解密失败");
+                        print("文件解密失败×");
                         return 0;
                     }
 
@@ -179,7 +168,7 @@ public class FileEncrypter {
                     if (resSM4FileOp==0){
                         System.gc();
                         outFile.delete();
-                        print("文件解密失败");
+                        print("文件解密失败×");
                         return 0;
                     }
                     break;
@@ -187,16 +176,7 @@ public class FileEncrypter {
                     break;
             }
             Date end = new Date();
-            long duration = (end.getTime() - start.getTime());
-            if (duration<=1000){
-                print("用时" + (duration) + "ms");
-            }else if(duration>1000&&duration<=60000){
-                print("用时" + (duration) / 1000 + "s");
-            }else if (duration>60000&&duration<=360000){
-                print("用时" + (duration) / 60000 + "m");
-            }else if (duration>360000){
-                print("用时" + (duration) / 360000 + "h");
-            }
+            print(TimeFormat(end.getTime() - start.getTime()));
             print("--------------------------------------------------------------------------");
 
             return 1;
@@ -207,6 +187,24 @@ public class FileEncrypter {
             return 0;//发生错误
 
         }
+    }
+
+    /**
+     * 时间格式化
+     * @param num 传入long格式的时间
+     * @return 返回格式化后的时间
+     */
+    public  static String TimeFormat(long num){
+            if (num<=1000){
+                return ("用时" + (num) + "ms");
+            }else if(num>1000&&num<=60000){
+                return ("用时" + (num) / 1000 + "s");
+            }else if (num>60000&&num<=360000){
+                return ("用时" + (num) / 60000 + "m");
+            }else if (num>360000){
+                return ("用时" + (num) / 360000 + "h");
+            }
+        return "";
     }
     //DES文件操作
     private int DESFileOp(String encryptPath, String newPath, String fileName,int method, EncryptDES encryptDES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
@@ -221,7 +219,7 @@ public class FileEncrypter {
                     print("文件加密完成√");
                 }
             } catch (Exception e) {
-                print("文件加密失败");
+                print("文件加密失败×");
                 System.out.println(e);
                 return 0;
             }
@@ -233,7 +231,6 @@ public class FileEncrypter {
                 if (encryptIndex==1){
                     print("解密操作完成√");
                     print("正在比对文件MD5...");
-                    saveMD5 = encryptDES.getSaveMD5();
                     saveMD5 = encryptDES.getSaveMD5();
                     print("文件保存MD5: "+ saveMD5);
                     String outFile = encryptDES.getOutFile();
@@ -284,7 +281,7 @@ public class FileEncrypter {
                 file.delete();
             }
         }else {//解密
-            print("正在使用AES解密 >>>  ");
+            print("正在使用AES解密 >>>    ");
             end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
             start = end - 4;
             return AES_DECRYPT(1,encryptPath,newPath,encryptAES);
@@ -485,7 +482,7 @@ public class FileEncrypter {
         try {
             //加密
             if (method==0){
-                print("正在使用SM4加密 >>> ");
+                print("正在使用SM4加密 >>>     ");
                 end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
                 start = end - 4;
                 //文件校验
@@ -499,7 +496,7 @@ public class FileEncrypter {
 
                 }
             }else {//解密
-                print("正在使用SM4解密 >>> ");
+                print("正在使用SM4解密 >>>    ");
                 end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
                 start = end - 4;
                 return SM4_DECRYPT(encryptPath,newPath,encrySM4);
@@ -554,18 +551,7 @@ public class FileEncrypter {
             byte[] buffer = new byte[1024];
             int n = 0;
             while ((r = is.read(buffer)) > 0) {
-//                byte[] temp = new byte[r];
-//                System.arraycopy(buffer,0,temp,0,r);
-//                byte[] resByte = encrySM4.encrypt(temp);
-//                out.write(resByte);
-//                out.flush();
-//                if (r==1024){
-//                    sum += r;
-//                    progress = sum / fileLen;
-//                    sm4Print((int) (progress*100));
-//                }else {
-//                    sm4Print(100);
-//                }
+
 
                 byte[] temp = new byte[r];
                 System.arraycopy(buffer,0,temp,0,r);
@@ -601,7 +587,6 @@ public class FileEncrypter {
             OutputStream out = null;
             String saveMD5;
             int r;
-            double progress,sum=0;
             File f = new File(encryptPath);
             //获取文件长度
             double fileLen = f.length();
@@ -615,13 +600,6 @@ public class FileEncrypter {
             int md5len = Integer.parseInt(new String(encrySM4.decrypt(md5LenBuffer)));
             byte[] md5Buffer = new byte[md5len];
             byte[] buffer = new byte[1040];
-
-//            //读取保存的md5长度
-//            byte[] md5LenBuffer = new byte[16];
-//            is.read(md5LenBuffer);
-//
-//            int md5len = Integer.parseInt(new String(encrySM4.decrypt(md5LenBuffer)));
-//            byte[] md5Buffer = new byte[md5len];
 
 
             is.read(md5Buffer);
@@ -641,7 +619,7 @@ public class FileEncrypter {
                 out = new FileOutputStream(newPath+"\\"+saveFileName);
             }else {//校验
                 out = new FileOutputStream(encryptPath+"_TEMP");
-                print("正在校验文件 >>> 0%");
+                print("正在校验文件 >>>    ");
                 end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
                 start = end - 4;
             }
@@ -673,14 +651,8 @@ public class FileEncrypter {
             out.close();
             printProgress(100);
 
-
-
-
-
-
-
             if (SM4_FLAG==0){
-                print("\r\n解密操作完成√");
+                print("解密操作完成√");
                 print("正在比对文件MD5...");
                 print("文件保存MD5: "+ saveMD5);
                 //计算文件MD5

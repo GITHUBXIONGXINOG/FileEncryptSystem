@@ -60,6 +60,8 @@ public class EncryptDES {
 
             }
         }
+        consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
+
     }
 
     /**
@@ -248,10 +250,11 @@ public class EncryptDES {
             out.close();
             is.close();
         } catch (Exception e) {
-            consoleArea.append("文件解密失败");
+            consoleArea.append("文件解密失败×\r\n");
             System.out.println(e);
            return 0;
         }
+        consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
 
         return 1;
     }
