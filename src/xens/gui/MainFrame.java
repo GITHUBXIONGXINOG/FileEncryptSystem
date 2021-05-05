@@ -331,6 +331,7 @@ public class MainFrame extends JFrame implements ActionListener{
         decryptLabel1.setFont(new Font("宋体",Font.BOLD,16));
         //设置密钥标签大小
         decryptLabel1.setPreferredSize(new Dimension(90,30));
+
         decryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加密钥标签到窗口
         this.add(decryptLabel1);
@@ -340,6 +341,57 @@ public class MainFrame extends JFrame implements ActionListener{
         //设置解密密钥,默认内容
 //        decryptKey.setText("1234567887654344");
         decryptKey.addFocusListener(new JTextFieldHintListener(decryptKey,"请输入解密密钥"));
+        //拖拽密钥文件
+        decryptKey.setTransferHandler(new TransferHandler(){
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean importData(JComponent comp, Transferable t) {
+                try {
+                    //获取拖拽的文件信息
+                    Object o = t.getTransferData(DataFlavor.javaFileListFlavor);
+                    //转为String,并取代[]
+                    String filepath = o.toString();
+                    if (filepath.startsWith("[")) {
+                        filepath = filepath.substring(1);
+                    }
+                    if (filepath.endsWith("]")) {
+                        filepath = filepath.substring(0, filepath.length() - 1);
+                    }
+                    System.out.println(filepath);
+                    String[] pathList = filepath.replace(", ",",").split(",");
+                    //添加到文本框
+                    decryptKey.setText(filepath);
+                    inputDePassword=true;
+                    int len = pathList.length;
+                    if (len==1){
+                        //设置输出文本域
+                        consoleArea.append("当前选择的密钥地址为:"+filepath);
+                        File f = new File(filepath);
+
+                    }else if (len > 1){
+                        consoleArea.append("密钥路径错误:");
+//                        JOptionPane.showMessageDialog(this, "文件路径错误!", "错误",JOptionPane.WARNING_MESSAGE);
+                    }
+
+
+                    return true;
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+            //拖拽文件触发,判断能否被导入
+            @Override
+            public boolean canImport(JComponent comp, DataFlavor[] flavors) {
+                for (int i = 0; i < flavors.length; i++) {
+                    if (DataFlavor.javaFileListFlavor.equals(flavors[i])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         decryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
@@ -467,8 +519,12 @@ public class MainFrame extends JFrame implements ActionListener{
                 } catch (BadLocationException badLocationException) {
                     badLocationException.printStackTrace();
                 }
+               String decryptKeyText =  decryptKey.getText();
             //没有输入密钥,清空
-            if (!inputDePassword){
+//            if (!inputDePassword){
+//                decryptKey.setText("");
+//            }
+            if (decryptKeyText.equals("请输入解密密钥")){
                 decryptKey.setText("");
             }
                 //创建新的加密线程,并传入对应的信息,使用start()调用新线程
