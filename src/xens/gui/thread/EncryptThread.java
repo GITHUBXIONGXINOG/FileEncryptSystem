@@ -51,6 +51,18 @@ public class EncryptThread extends Thread {
                 JOptionPane.showMessageDialog(jf, "文件路径错误!", "错误",JOptionPane.WARNING_MESSAGE);
                 return;
             }
+            //不为ECC或密钥为空时报错
+            if (encryptKey.getText().equals("")){
+                if (encryptMethod.getSelectedIndex()!=3){
+                    consoleArea.append("密钥错误:"+path);
+                    JOptionPane.showMessageDialog(jf, "请检查密钥!", "错误",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                if (encryptMethod.getSelectedIndex()==3){
+                    encryptKey.setText("私钥保存在源目录中");
+                }
+
+            }
 
             //创建文件加密实例
             FileEncrypter fileEncrypter = new FileEncrypter(consoleArea);

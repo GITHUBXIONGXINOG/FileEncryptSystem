@@ -66,7 +66,6 @@ public class FileEncrypter {
      * @return
      */
     public int encrypt(int index, File file, String encryptFilePath, int method, String key){
-//        String EncryptPath = encryptFilePath.getText();
         this.index = index;
         Date start = new Date();
         print("正在加密: "+ file.getName());
@@ -85,6 +84,8 @@ public class FileEncrypter {
                 case 0: methodName="DES";break;
                 case 1: methodName="AES";break;
                 case 2: methodName="SM4";break;
+                case 3: methodName="ECC";break;
+
             }
             //拼接文件名
 
@@ -99,19 +100,21 @@ public class FileEncrypter {
                     EncryptDES encryptDES = new EncryptDES(key,consoleArea,index);
                     DESFileOp(encryptFilePath,newPath,fileName,0,encryptDES);
                     consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
-
                     break;
                 case 1:
                     EncryptAES encryptAES = new EncryptAES(key);
                     AESFileOp(encryptFilePath,newPath,fileName,0,encryptAES);
                     consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
-
                     break;
                 case 2:
                     EncrySM4 encrySM4 = new EncrySM4(key);
                     SM4FileOp(encryptFilePath,newPath,fileName,0,encrySM4);
                     consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
-
+                    break;
+                case 3:
+                    EncryptECC encryptECC = new EncryptECC(key);
+                    ECCFileOp(encryptFilePath,newPath,fileName,0,encryptECC);
+                    consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
                     break;
             }
 
@@ -476,6 +479,7 @@ public class FileEncrypter {
 
         return 1;
     }
+
     private int SM4_FLAG = 0;
     //SM4文件操作
     private int SM4FileOp(String encryptPath, String newPath, String fileName,int method, EncrySM4 encrySM4)  {
@@ -687,4 +691,223 @@ public class FileEncrypter {
         }
         return 1;
     }
+
+    //ECC文件操作
+    private int ECCFileOp(String encryptPath, String newPath, String fileName, int method, EncryptECC encryptECC)  {
+        try {
+            //加密
+            if (method==0){
+                print("正在使用ECC加密 >>>     ");
+                end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
+                start = end - 4;
+                //文件校验
+                if (ECC_ENCRYPT(encryptPath,newPath,fileName,encryptECC)==1){
+                    print("文件加密成功√");
+                    File file = new File(encryptPath);
+                    while (file.exists()){
+                        System.gc();
+                        file.delete();
+                    }
+
+                }
+            }else {//解密
+                print("正在使用ECC解密 >>>    ");
+                end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
+                start = end - 4;
+                return ECC_DECRYPT(encryptPath,newPath,encryptECC);
+            }
+        } catch (Exception e) {
+            return 0;
+        }
+
+        return 1;
+    }
+
+    /**
+     * ECC加密
+     * @param encryptPath 加密文件地址
+     * @param newPath   输出文件地址
+     * @param fileName 文件名字
+     * @param encryptECC ecc实例对象
+     * @return
+     */
+    private int ECC_ENCRYPT(String encryptPath, String newPath, String fileName, EncryptECC encryptECC){
+        try {
+            FileInputStream is = new FileInputStream(encryptPath);
+            OutputStream out = new FileOutputStream(newPath);
+            String saveMD5;
+            int r;
+            File f = new File(encryptPath);
+            //获取文件长度
+            double fileLen = f.length();
+            //分组加密次数
+            int allTime = (int) Math.ceil((fileLen/1024));
+            int nTime = allTime/100;
+
+            //计算文件MD5
+            String fileMd5 = MD5Util.md5HashCode(encryptPath);
+            //写入文件MD5信息
+            byte[] enMD5 = encryptECC.encrypt(fileMd5.getBytes());
+            //MD5的长度
+            String len = String.valueOf(enMD5.length);
+            //16位
+            byte[] byteMD5Len = encryptECC.encrypt(len.getBytes());
+            //写入MD5长度
+            out.write(byteMD5Len);
+            out.flush();
+            out.write(enMD5);
+            out.flush();
+
+            //加密文件名
+            byte[] encryptFileName =  encryptECC.encrypt(fileName.getBytes());
+            //获取加密后的文件名长度
+            int fileNameLen = encryptFileName.length;
+            //存入名字长度
+            byte[] lenByte = encryptECC.encrypt((String.valueOf(fileNameLen)).getBytes());
+            out.write(lenByte);
+            //写入文件信息
+            out.write(encryptFileName);
+
+
+
+            byte[] buffer = new byte[1024];
+            int n = 0;
+            while ((r = is.read(buffer)) > 0) {
+
+
+                byte[] temp = new byte[r];
+                System.arraycopy(buffer,0,temp,0,r);
+                //使用aes加密
+                byte[] res = encryptECC.encrypt(temp);
+                out.write(res);
+                out.flush();
+                if (nTime!=0&&n%nTime==0){
+                    if (nTime!=n/nTime){
+                        nNum++;
+                        if (nNum<=100){
+                            printProgress(nNum);
+                        }
+                    }
+                }
+                if (nTime==0||r<512){
+                    printProgress(100);
+                }
+                n++;
+
+            }
+//            SM4_FLAG = 1;
+            ECC_DECRYPT(newPath,f.getParent(),encryptECC);
+        }catch (Exception e){
+            return 0;
+        }
+        return 1;
+    }
+    //SM4解密
+    private int ECC_DECRYPT(String encryptPath, String newPath, EncryptECC encryptECC){
+        try{
+            FileInputStream is = new FileInputStream(encryptPath);
+            OutputStream out = null;
+            String saveMD5;
+            int r;
+            File f = new File(encryptPath);
+            //获取文件长度
+            double fileLen = f.length();
+            //分组加密次数
+            int allTime = (int) Math.ceil((fileLen/1024));
+            int nTime = allTime/100;
+            //读取保存的md5长度
+            byte[] md5LenBuffer = new byte[16];
+            is.read(md5LenBuffer);
+
+            int md5len = Integer.parseInt(new String(encryptECC.decrypt(md5LenBuffer)));
+            byte[] md5Buffer = new byte[md5len];
+            byte[] buffer = new byte[1040];
+
+
+            is.read(md5Buffer);
+            saveMD5 =  new String(encryptECC.decrypt(md5Buffer));
+            byte[] fileNameLen = new byte[16];
+            //读取保存的文件名长度信息
+            is.read(fileNameLen);
+            saveFileNameLen = new String(encryptECC.decrypt(fileNameLen));
+            int intFileNameLen = Integer.parseInt(saveFileNameLen);
+
+            //读取保存的文件名
+            byte[] fileName = new byte[intFileNameLen];
+            is.read(fileName);
+            saveFileName = new String(encryptECC.decrypt(fileName));
+
+            if (SM4_FLAG==0){//直接解压
+                out = new FileOutputStream(newPath+"\\"+saveFileName);
+            }else {//校验
+                out = new FileOutputStream(encryptPath+"_TEMP");
+                print("正在校验文件 >>>    ");
+                end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
+                start = end - 4;
+            }
+            int n = 0;
+            nNum = -1;
+            while ((r = is.read(buffer)) > 0) {
+
+                byte[] temp = new byte[r];
+                System.arraycopy(buffer,0,temp,0,r);
+                //使用aes解密
+                byte[] res = encryptECC.decrypt(temp);
+                out.write(res);
+                out.flush();
+                if (nTime!=0&&n%nTime==0){
+                    if (nTime!=n/nTime){
+                        nNum++;
+                        if (nNum<=100){
+                            printProgress(nNum);
+                        }
+                    }
+                }
+                if (nTime==0||r<512){
+                    printProgress(100);
+                }
+                n++;
+
+            }
+            is.close();
+            out.close();
+            printProgress(100);
+
+            if (SM4_FLAG==0){
+                print("解密操作完成√");
+                print("正在比对文件MD5...");
+                print("文件保存MD5: "+ saveMD5);
+                //计算文件MD5
+                String fileMd5 = MD5Util.md5HashCode(newPath+"\\"+saveFileName);
+                print("当前解密文件MD5: "+fileMd5);
+                if (saveMD5.equals(fileMd5)){
+                    print("MD5比对成功!文件为原始文件√");
+                    f.delete();
+                }else {
+                    print("MD5比对失败!文件被修改!!!");
+                }
+            }else {//校验
+                //计算文件MD5
+                String fileMd5 = MD5Util.md5HashCode(newPath+"\\"+saveFileName);
+                if (saveMD5.equals(fileMd5)){
+                    print("文件校验成功√");
+                    File file = new File(encryptPath+"_TEMP");
+                    //删除原始文件
+                    System.gc();
+                    file.delete();
+                    return 1;
+                }else {
+                    print("\r\n文件校验失败!请重试");
+
+
+                }
+            }
+
+        }catch (Exception e){
+            return 0;
+        }
+        return 1;
+    }
 }
+
+//}
