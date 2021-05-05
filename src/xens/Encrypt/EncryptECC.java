@@ -51,7 +51,7 @@ public class EncryptECC {
                 priKey = (ECPrivateKey) keyPair.getPrivate();
                 System.out.println("[pubKey]:\n" + getPublicKey(keyPair));
                 System.out.println("[priKey]:\n" + getPrivateKey(keyPair));
-                priKeyPath = path+"\\"+fileName+"_priKey.txt";
+                priKeyPath = path+"\\"+fileName+".prikey";
                 cipher = Cipher.getInstance("ECIES", "BC");
                 cipher.init(Cipher.ENCRYPT_MODE, pubKey);
             }else{//解密
@@ -134,11 +134,6 @@ public class EncryptECC {
 
     //保存私钥
     public static int savePriveKey(){
-//        File file = new File(priKeyPath);
-
-
-
-
         try {
             FileOutputStream fs = new FileOutputStream(priKeyPath);
             fs.write(getPrivateKey(keyPair).getBytes());

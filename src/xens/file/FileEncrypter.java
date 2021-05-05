@@ -729,7 +729,12 @@ public class FileEncrypter {
                 print("正在使用ECC解密 >>>    ");
                 end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-2)-2;
                 start = end - 4;
-                return ECC_DECRYPT(encryptPath,newPath,encryptECC);
+                if (ECC_DECRYPT(encryptPath,newPath,encryptECC)==1){
+                    print("文件解密成功√");
+                    return 1;
+                }else {
+                    return 0;
+                }
             }
         } catch (Exception e) {
             return 0;

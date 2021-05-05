@@ -17,7 +17,7 @@ public class DecryptThread extends Thread {
     String decryptKey;//解密密钥
     JComboBox<String> decryptMethod;//解密方法
     JTextArea consoleArea;//输出域
-
+    String priKeyPath;//密钥文件地址
     public DecryptThread(JFrame jf,JButton btnEncrypt,JButton btnDecrypt, JTextField decryptFilePath,JTextField decryptKey,JComboBox<String> decryptMethod,JTextArea consoleArea){
         this.jf = jf;
         this.btnEncrypt = btnEncrypt;
@@ -27,6 +27,7 @@ public class DecryptThread extends Thread {
         this.decryptKey = decryptKey.getText();
         this.decryptMethod = decryptMethod;
         this.setName("Encrypt_Thread");
+
     }
 //    public static readPriKey(JTextField decryptKey){
 //        String path = decryptKey.getText();
@@ -82,7 +83,11 @@ public class DecryptThread extends Thread {
             //只有一个
             if (listLen==1){
                 if (resIndex == 1){//解密成功
-                    consoleArea.append("文件解密成功!");
+                    consoleArea.append("文件解密完成!");
+                    File file1 = new File(priKeyPath);
+                    if (file1.exists()&&file1.isFile()){
+                        file1.delete();
+                    }
                     //显示面板
                     JOptionPane.showMessageDialog(jf,"文件解密成功!","解密成功",JOptionPane.PLAIN_MESSAGE);
                 }else {
@@ -92,7 +97,7 @@ public class DecryptThread extends Thread {
                 }
             }else {//有多个文件
                 if (resIndex == 1){//解密成功
-                    consoleArea.append("文件解密成功!");
+                    consoleArea.append("文件解密完成!");
                     if (index==listLen-1){
                           JOptionPane.showMessageDialog(jf,"文件解密成功!","解密成功",JOptionPane.PLAIN_MESSAGE);
                     }
@@ -125,6 +130,7 @@ public class DecryptThread extends Thread {
                 byte[] priKey = new byte[1024];
                 is.read(priKey);
                 this.decryptKey = new String(priKey);
+                priKeyPath=path;
             }catch (Exception e){
                 System.out.println(e);
             }
