@@ -1,16 +1,20 @@
 package xens.Encrypt;
 
+import cn.hutool.core.codec.Base64Decoder;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.spec.*;
 import java.util.Base64;
 
 import static xens.test.EccTest.getPrivateKey;
@@ -24,30 +28,51 @@ public class EncryptECC {
     private static ECPublicKey pubKey;//公钥
     private static ECPrivateKey priKey;//私钥
     private static String priKeyPath;//私钥保存地址
-
+    private static Cipher cipher;//解密
     static {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
     /**
      * 初始化实例
+     * @param mode 0为加密时的初始,1为解密时的初始
      * @param key 用户输入随机数种子
      * @param path 文件夹路径
      * @param fileName 文件名字
      */
-    public EncryptECC(String key, String path, String fileName){
+    public EncryptECC(int mode,String key, String path, String fileName){
         try {
-            //保存密钥对
-             keyPair = getKeyPair(key);
-             pubKey = (ECPublicKey) keyPair.getPublic();
-             priKey = (ECPrivateKey) keyPair.getPrivate();
-            System.out.println("[pubKey]:\n" + getPublicKey(keyPair));
-            System.out.println("[priKey]:\n" + getPrivateKey(keyPair));
-            priKeyPath = path+"\\"+fileName+"_priKey.txt";
+            if (mode==0){
+                //保存密钥对
+                keyPair = getKeyPair(key);
+                pubKey = (ECPublicKey) keyPair.getPublic();
+                priKey = (ECPrivateKey) keyPair.getPrivate();
+                System.out.println("[pubKey]:\n" + getPublicKey(keyPair));
+                System.out.println("[priKey]:\n" + getPrivateKey(keyPair));
+                priKeyPath = path+"\\"+fileName+"_priKey.txt";
+                cipher = Cipher.getInstance("ECIES", "BC");
+                cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+            }else{//解密
+                try {
+                    byte[] keyBytes = Base64Decoder.decode(key);
+                    PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
+                    KeyFactory keyFactory = KeyFactory.getInstance("EC");
+                    priKey = (ECPrivateKey) keyFactory.generatePrivate(pkcs8KeySpec);
+                    cipher = Cipher.getInstance("ECIES", "BC");
+                    cipher.init(Cipher.DECRYPT_MODE, priKey);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println(e);
+                }
+
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 
     //生成秘钥对
     public static KeyPair getKeyPair(String strKey) throws Exception {
@@ -78,8 +103,8 @@ public class EncryptECC {
      */
 
     public static byte[] encrypt(byte[] content) throws Exception {
-        Cipher cipher = Cipher.getInstance("ECIES", "BC");
-        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+//        Cipher cipher = Cipher.getInstance("ECIES", "BC");
+//        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
         return cipher.doFinal(content);
     }
 
@@ -91,14 +116,18 @@ public class EncryptECC {
      */
     //私钥解密
     public static byte[] decrypt(byte[] content) throws Exception {
-        Cipher cipher = Cipher.getInstance("ECIES", "BC");
-        cipher.init(Cipher.DECRYPT_MODE, priKey);
+//        Cipher cipher = Cipher.getInstance("ECIES", "BC");
+//        cipher.init(Cipher.DECRYPT_MODE, priKey);
         return cipher.doFinal(content);
     }
 
     //保存私钥
     public static int savePriveKey(){
 //        File file = new File(priKeyPath);
+
+
+
+
         try {
             FileOutputStream fs = new FileOutputStream(priKeyPath);
             fs.write(getPrivateKey(keyPair).getBytes());

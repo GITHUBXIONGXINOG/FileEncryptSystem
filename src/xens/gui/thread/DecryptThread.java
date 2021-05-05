@@ -46,6 +46,12 @@ public class DecryptThread extends Thread {
                 JOptionPane.showMessageDialog(jf, "文件路径错误!", "错误",JOptionPane.WARNING_MESSAGE);
                 return;
             }
+            //密钥为空时报错
+            if (decryptKey.getText().equals("")){
+                consoleArea.append("密钥错误:"+path);
+                JOptionPane.showMessageDialog(jf, "请检查密钥!", "错误",JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             //创建文件加密实例
             FileEncrypter fileEncrypter = new FileEncrypter(consoleArea);
             //设置加密中禁用按钮

@@ -114,7 +114,7 @@ public class FileEncrypter {
                     consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
                     break;
                 case 3:
-                    EncryptECC encryptECC = new EncryptECC(key,parentPath,fileName);
+                    EncryptECC encryptECC = new EncryptECC(0,key,parentPath,fileName);
                     ECCFileOp(encryptFilePath,newPath,fileName,0,encryptECC);
                     consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
                     break;
@@ -177,8 +177,11 @@ public class FileEncrypter {
                         return 0;
                     }
                     break;
-                default:
-                    break;
+                 case 3:
+                     EncryptECC encryptECC = new EncryptECC(1,key,parentPath,fileName);
+                     ECCFileOp(decryptFilePath,newPath,fileName,1,encryptECC);
+                     consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
+                     break;
             }
             Date end = new Date();
             print(TimeFormat(end.getTime() - start.getTime()));

@@ -454,22 +454,10 @@ public class MainFrame extends JFrame implements ActionListener{
                 }
                 //创建新的加密线程,并传入对应的信息,使用start()调用新线程
                 new EncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
-//            }
-//            else {//未输入密码
-//                if (encryptMethod.getSelectedIndex()==3){
-//
-//                }else {
-////                    String msg = "";
-////                    if (encryptFilePath.getText().equals("")){
-////                        msg = "请选择或输入地址!";
-////                    }
-////                    JOptionPane.showMessageDialog(this, "请输入密钥!", "错误",JOptionPane.WARNING_MESSAGE);
-//
-//                }
-//            }
+
 
         }else if(e.getSource() == btnDecrypt){//当前触发的事件发起者是文件解密按钮
-            if (inputDePassword){
+
                 //将方法选择框选中的加密方法转换为String类型
                 String.valueOf(encryptMethod.getSelectedItem());
                 try {
@@ -479,10 +467,13 @@ public class MainFrame extends JFrame implements ActionListener{
                 } catch (BadLocationException badLocationException) {
                     badLocationException.printStackTrace();
                 }
+            //没有输入密钥,清空
+            if (!inputDePassword){
+                decryptKey.setText("");
+            }
                 //创建新的加密线程,并传入对应的信息,使用start()调用新线程
                 new DecryptThread(this,btnEncrypt,btnDecrypt,decryptFilePath,decryptKey,decryptMethod,consoleArea).start();
 
-            }
         }
     }
 
