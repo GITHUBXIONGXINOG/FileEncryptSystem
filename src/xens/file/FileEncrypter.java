@@ -1,5 +1,6 @@
 package xens.file;
 
+import cn.hutool.core.codec.Base64Decoder;
 import xens.Encrypt.*;
 import xens.Encrypt.EncryptAES;
 
@@ -771,8 +772,17 @@ public class FileEncrypter {
             byte[] encryptFileName =  encryptECC.encrypt(fileName.getBytes());
             //获取加密后的文件名长度
             int fileNameLen = encryptFileName.length;
+//            String strLen = fileNameLen+"";
+            byte[] byteLen =  intToByteArray(fileNameLen);
             //存入名字长度88
-            byte[] lenByte = encryptECC.encrypt((String.valueOf(fileNameLen)).getBytes());
+            byte[] lenByte = encryptECC.encrypt(byteLen);
+//            byte[] len88Byte = new byte[88];
+//            int lenByteLen = lenByte.length;
+//            if (lenByteLen<88){
+//                System.arraycopy(lenByte,0,len88Byte,0,lenByteLen);
+//            }
+//            byte[] lenByte = new byte[1];
+//            lenByte[0] = Base64Decoder.decode(new );
             out.write(lenByte);
             //写入文件信息
             out.write(encryptFileName);
@@ -806,12 +816,27 @@ public class FileEncrypter {
             }
             ECC_FLAG = 1;
             printProgress(100);
+            encryptECC.changeCipherMode();
             ECC_DECRYPT(newPath,f.getParent(),encryptECC);
         }catch (Exception e){
             System.out.println(e);
             return 0;
         }
         return 1;
+    }
+
+    /**
+     * int到byte[] 由高位到低位
+     * @param i 需要转换为byte数组的整行值。
+     * @return byte数组
+     */
+    public static byte[] intToByteArray(int i) {
+        byte[] result = new byte[4];
+        result[0] = (byte)((i >> 24) & 0xFF);
+        result[1] = (byte)((i >> 16) & 0xFF);
+        result[2] = (byte)((i >> 8) & 0xFF);
+        result[3] = (byte)(i & 0xFF);
+        return result;
     }
 
     //ECC解密
@@ -832,17 +857,24 @@ public class FileEncrypter {
             is.read(md5LenBuffer);
 
             int md5len = Integer.parseInt(new String(encryptECC.decrypt(md5LenBuffer)));
+
+
             byte[] md5Buffer = new byte[md5len];
             byte[] buffer = new byte[1109];
 
 
             is.read(md5Buffer);
             saveMD5 =  new String(encryptECC.decrypt(md5Buffer));
-            byte[] fileNameLen = new byte[88];
+
+            byte[] fileNameLen = new byte[89];
             //读取保存的文件名长度信息
             is.read(fileNameLen);
-            saveFileNameLen = new String(encryptECC.decrypt(fileNameLen));
-            int intFileNameLen = Integer.parseInt(saveFileNameLen);
+
+            byte[] resNameLen = encryptECC.decrypt(fileNameLen);
+
+//            saveFileNameLen = new String(encryptECC.decrypt(fileNameLen));
+            int intFileNameLen = resNameLen[3];
+
 
             //读取保存的文件名
             byte[] fileName = new byte[intFileNameLen];
