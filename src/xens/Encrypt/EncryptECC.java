@@ -30,6 +30,7 @@ public class EncryptECC {
     private static String priKeyPath;//私钥保存地址
     private static Cipher cipher;//解密
     private int mode;//模式
+    public Boolean status=true;//状态
     static {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
@@ -65,20 +66,24 @@ public class EncryptECC {
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println(e);
+                    status=false;
                 }
 
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            status=false;
         }
     }
 
-
+    //改变cipher模式
     public void changeCipherMode() throws Exception {
         cipher = Cipher.getInstance("ECIES", "BC");
         cipher.init(Cipher.DECRYPT_MODE, priKey);
     }
+
+
 
     //生成秘钥对
     public static KeyPair getKeyPair(String strKey) throws Exception {
@@ -109,8 +114,6 @@ public class EncryptECC {
      */
 
     public static byte[] encrypt(byte[] content) throws Exception {
-//        Cipher cipher = Cipher.getInstance("ECIES", "BC");
-//        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
         return cipher.doFinal(content);
     }
 

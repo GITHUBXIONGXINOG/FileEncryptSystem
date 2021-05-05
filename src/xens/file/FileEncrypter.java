@@ -180,13 +180,21 @@ public class FileEncrypter {
                     break;
                  case 3:
                      EncryptECC encryptECC = new EncryptECC(1,key,parentPath,fileName);
-                     int resECCFileOp = ECCFileOp(decryptFilePath,newPath,fileName,1,encryptECC);
-                     if (resECCFileOp==0){
+                     if (encryptECC.status==true){
+                         int resECCFileOp = ECCFileOp(decryptFilePath,newPath,fileName,1,encryptECC);
+                         if (resECCFileOp==0){
+                             System.gc();
+                             outFile.delete();
+                             print("文件解密失败×");
+                             return 0;
+                         }
+                     }else {
                          System.gc();
                          outFile.delete();
                          print("文件解密失败×");
                          return 0;
                      }
+
                      consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
                      break;
             }
