@@ -3,6 +3,7 @@ package xens.gui.thread;
 import xens.file.FileEncrypter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Date;
@@ -52,16 +53,10 @@ public class EncryptThread extends Thread {
                 return;
             }
             //不为ECC或密钥为空时报错
-            if (encryptKey.getText().equals("")){
-                if (encryptMethod.getSelectedIndex()!=3){
+            if (encryptKey.getText().equals("")&&encryptMethod.getSelectedIndex()!=3){
                     consoleArea.append("密钥错误:"+path);
                     JOptionPane.showMessageDialog(jf, "请检查密钥!", "错误",JOptionPane.WARNING_MESSAGE);
                     return;
-                }
-                if (encryptMethod.getSelectedIndex()==3){
-                    encryptKey.setText("私钥保存在源目录中");
-                }
-
             }
 
             //创建文件加密实例
@@ -82,12 +77,12 @@ public class EncryptThread extends Thread {
                 consoleArea.append("文件加密失败!");
                 JOptionPane.showMessageDialog(jf,"文件加密出现错误...","加密错误",JOptionPane.WARNING_MESSAGE);
             }else {
-                consoleArea.append("文件加密成功!");
+                consoleArea.append("文件加密完成!");
                 //显示面板
                 JOptionPane.showMessageDialog(jf,"文件加密成功!","加密成功",JOptionPane.PLAIN_MESSAGE);
             }
             Date end = new Date();
-            consoleArea.append("\r\n加密总耗时:"+TimeFormat(end.getTime() - start.getTime()));
+            consoleArea.append("\r\n加密总:"+TimeFormat(end.getTime() - start.getTime()));
             consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
 
         //设置按钮可用

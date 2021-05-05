@@ -1,8 +1,11 @@
 package xens.Encrypt;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.security.*;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -20,10 +23,19 @@ public class EncryptECC {
     private static KeyPair keyPair;//密钥对
     private static ECPublicKey pubKey;//公钥
     private static ECPrivateKey priKey;//私钥
+    private static String priKeyPath;//私钥保存地址
+
     static {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
-    public EncryptECC(String key){
+
+    /**
+     * 初始化实例
+     * @param key 用户输入随机数种子
+     * @param path 文件夹路径
+     * @param fileName 文件名字
+     */
+    public EncryptECC(String key, String path, String fileName){
         try {
             //保存密钥对
              keyPair = getKeyPair(key);
@@ -31,6 +43,7 @@ public class EncryptECC {
              priKey = (ECPrivateKey) keyPair.getPrivate();
             System.out.println("[pubKey]:\n" + getPublicKey(keyPair));
             System.out.println("[priKey]:\n" + getPrivateKey(keyPair));
+            priKeyPath = path+"\\"+fileName+"_priKey.txt";
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,18 +76,36 @@ public class EncryptECC {
      * @param content 传入byte数组
      * @return 返回加密后的byte数组
      */
-    public byte[] encrypt(byte[] content){
 
-        return content;
+    public static byte[] encrypt(byte[] content) throws Exception {
+        Cipher cipher = Cipher.getInstance("ECIES", "BC");
+        cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+        return cipher.doFinal(content);
     }
+
 
     /**
      * 解密
      * @param content 传入加密后的byte数组
      * @return 返回解密后的byte数组
      */
-    public byte[] decrypt(byte[] content){
+    //私钥解密
+    public static byte[] decrypt(byte[] content) throws Exception {
+        Cipher cipher = Cipher.getInstance("ECIES", "BC");
+        cipher.init(Cipher.DECRYPT_MODE, priKey);
+        return cipher.doFinal(content);
+    }
 
-        return content;
+    //保存私钥
+    public static int savePriveKey(){
+//        File file = new File(priKeyPath);
+        try {
+            FileOutputStream fs = new FileOutputStream(priKeyPath);
+            fs.write(getPrivateKey(keyPair).getBytes());
+        } catch (Exception e) {
+            System.out.println(e);
+            return 0;
+        }
+        return 1;
     }
 }
