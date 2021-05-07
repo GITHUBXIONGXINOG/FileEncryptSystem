@@ -1,11 +1,8 @@
 package xens.Encrypt;
 
-import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.crypto.SmUtil;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
-
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 
 public class EncrySM4 {
@@ -35,12 +32,9 @@ public class EncrySM4 {
         }
     }
     public byte[] encrypt(byte[] content){
-//        return sm4.encryptHex(content);
         return sm4.encrypt(content);
     }
     public byte[] decrypt(byte[] content){
-//        return sm4.decryptStr(encryptHex, CharsetUtil.CHARSET_UTF_8);
         return sm4.decrypt(content);
-
     }
 }

@@ -82,7 +82,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel label0 = new JLabel();
         //设置标签大小
         label0.setPreferredSize(new Dimension(220, 90));
-        label0.setBorder(BorderFactory.createLineBorder(Color.red));
+//        label0.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label0);
 
@@ -93,7 +93,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel titleLabel = new JLabel(titleImage,SwingConstants.LEFT);
         //设置标签大小
         titleLabel.setPreferredSize(new Dimension(380,90));
-        titleLabel.setBorder(BorderFactory.createLineBorder(Color.red));
+//        titleLabel.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加title标签到窗口
         this.add(titleLabel);
 
@@ -101,7 +101,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel label1 = new JLabel();
         //设置标签大小
         label1.setPreferredSize(new Dimension(220, 90));
-        label1.setBorder(BorderFactory.createLineBorder(Color.red));
+//        label1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label1);
 
@@ -109,7 +109,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel label2 = new JLabel();
         //设置标签大小
         label2.setPreferredSize(new Dimension(20, 50));
-        label2.setBorder(BorderFactory.createLineBorder(Color.red));
+//        label2.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label2);
 
@@ -118,7 +118,7 @@ public class MainFrame extends JFrame implements ActionListener{
         encryptLabel.setFont(new Font("宋体",Font.BOLD,16));
         //设置标签大小
         encryptLabel.setPreferredSize(new Dimension(90, 30));
-        encryptLabel.setBorder(BorderFactory.createLineBorder(Color.red));
+//        encryptLabel.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加文件加密标签到窗口
         this.add(encryptLabel);
 
@@ -175,7 +175,7 @@ public class MainFrame extends JFrame implements ActionListener{
                 return false;
             }
         });
-        encryptFilePath.setBorder(BorderFactory.createLineBorder(Color.red));
+//        encryptFilePath.setBorder(BorderFactory.createLineBorder(Color.red));
 //
         //添加文件地址文本框到窗口
         this.add(encryptFilePath);
@@ -184,7 +184,7 @@ public class MainFrame extends JFrame implements ActionListener{
         btnEncryptFileChooser.addActionListener(this);
         //设置按钮大小
         btnEncryptFileChooser.setPreferredSize(new Dimension(20,30));
-        btnEncryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.black));
+//        btnEncryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加加密文件选择按钮到窗口
         this.add(btnEncryptFileChooser);
 
@@ -193,10 +193,10 @@ public class MainFrame extends JFrame implements ActionListener{
         method0.setFont(new Font("宋体",Font.BOLD,16));
         //设置标签大小
         method0.setPreferredSize(new Dimension(90,30));
-        method0.setBorder(BorderFactory.createLineBorder(Color.red));
+//        method0.setBorder(BorderFactory.createLineBorder(Color.red));
         //将方法标签添加到窗口
         this.add(method0);
-        encryptMethod.setBorder(BorderFactory.createLineBorder(Color.red));
+//        encryptMethod.setBorder(BorderFactory.createLineBorder(Color.red));
         //将加密选择按钮添加到窗口
         this.add(encryptMethod);
 
@@ -205,7 +205,7 @@ public class MainFrame extends JFrame implements ActionListener{
         encryptLabel1.setFont(new Font("宋体",Font.BOLD,16));
         //设置密钥标签大小
         encryptLabel1.setPreferredSize(new Dimension(90,30));
-        encryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
+//        encryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加密钥标签到窗口
         this.add(encryptLabel1);
 
@@ -215,7 +215,7 @@ public class MainFrame extends JFrame implements ActionListener{
 //        encryptKey.setText("1234567887654344");
         encryptKey.addFocusListener(new JTextFieldHintListener(encryptKey,"请输入加密密钥"));
 
-        encryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
+//        encryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加加密密钥输入标签到窗口
         this.add(encryptKey);
 
@@ -223,7 +223,7 @@ public class MainFrame extends JFrame implements ActionListener{
         btnEncrypt.addActionListener(this);
         //设置加密按钮的大小
         btnEncrypt.setPreferredSize(new Dimension(60,30));
-        btnEncrypt.setBorder(BorderFactory.createLineBorder(Color.red));
+//        btnEncrypt.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加加密按钮到窗口
         this.add(btnEncrypt);
 
@@ -232,7 +232,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel label3 = new JLabel();
         //设置标签大小
         label3.setPreferredSize(new Dimension(20, 50));
-        label3.setBorder(BorderFactory.createLineBorder(Color.black));
+//        label3.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加标签到窗口
         this.add(label3);
 
@@ -240,7 +240,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel label4 = new JLabel();
         //设置标签大小
         label4.setPreferredSize(new Dimension(20, 80));
-        label4.setBorder(BorderFactory.createLineBorder(Color.black));
+//        label4.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加标签到窗口
         this.add(label4);
 
@@ -249,7 +249,7 @@ public class MainFrame extends JFrame implements ActionListener{
         password.setFont(new Font("宋体",Font.BOLD,16));
         //设置标签大小
         password.setPreferredSize(new Dimension(90,30));
-        password.setBorder(BorderFactory.createLineBorder(Color.red));
+//        password.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(password);
 
@@ -310,7 +310,7 @@ public class MainFrame extends JFrame implements ActionListener{
         btnDecryptFileChooser.addActionListener(this);
         //解密文件选择按钮设置大小
         btnDecryptFileChooser.setPreferredSize(new Dimension(20,30));
-        btnDecryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.red));
+//        btnDecryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
         this.add(btnDecryptFileChooser);
 
@@ -319,10 +319,10 @@ public class MainFrame extends JFrame implements ActionListener{
         method1.setFont(new Font("宋体",Font.BOLD,16));
         //设置标签大小
         method1.setPreferredSize(new Dimension(90,30));
-        method1.setBorder(BorderFactory.createLineBorder(Color.red));
+//        method1.setBorder(BorderFactory.createLineBorder(Color.red));
         //将方法标签添加到窗口
         this.add(method1);
-        decryptMethod.setBorder(BorderFactory.createLineBorder(Color.red));
+//        decryptMethod.setBorder(BorderFactory.createLineBorder(Color.red));
         //将解密选择按钮添加到窗口
         this.add(decryptMethod);
 
@@ -332,7 +332,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //设置密钥标签大小
         decryptLabel1.setPreferredSize(new Dimension(90,30));
 
-        decryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
+//        decryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加密钥标签到窗口
         this.add(decryptLabel1);
 
@@ -393,7 +393,7 @@ public class MainFrame extends JFrame implements ActionListener{
             }
         });
 
-        decryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
+//        decryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
         this.add(decryptKey);
 
@@ -401,7 +401,7 @@ public class MainFrame extends JFrame implements ActionListener{
         btnDecrypt.addActionListener(this);
         //设置解锁按钮大小
         btnDecrypt.setPreferredSize(new Dimension(60,30));
-        btnDecrypt.setBorder(BorderFactory.createLineBorder(Color.red));
+//        btnDecrypt.setBorder(BorderFactory.createLineBorder(Color.red));
 
         //添加解锁按钮到窗口
         this.add(btnDecrypt);
@@ -410,7 +410,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel label5 = new JLabel();
         //设置标签大小
         label5.setPreferredSize(new Dimension(20, 50));
-        label5.setBorder(BorderFactory.createLineBorder(Color.black));
+//        label5.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加标签到窗口
         this.add(label5);
 
@@ -418,7 +418,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel label6 = new JLabel();
         //设置标签大小
         label6.setPreferredSize(new Dimension(60, 50));
-        label6.setBorder(BorderFactory.createLineBorder(Color.black));
+//        label6.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加标签到窗口
         this.add(label6);
 
@@ -439,7 +439,7 @@ public class MainFrame extends JFrame implements ActionListener{
         JLabel label7 = new JLabel();
         //设置标签大小
         label7.setPreferredSize(new Dimension(60, 90));
-        label7.setBorder(BorderFactory.createLineBorder(Color.red));
+//        label7.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(label7);
 
@@ -489,10 +489,6 @@ public class MainFrame extends JFrame implements ActionListener{
 
             }
         }else if (e.getSource() == btnEncrypt){//当前触发的事件发起者是文件加密按钮
-            //输入了密码
-//            if (inputEnPassword){
-                //将方法选择框选中的加密方法转换为String类型
-                String.valueOf(encryptMethod.getSelectedItem());
                 try {
                     int start = consoleArea.getLineStartOffset(1);
                     int end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-1);
