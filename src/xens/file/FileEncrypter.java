@@ -12,6 +12,7 @@ import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class FileEncrypter {
 
@@ -222,13 +223,18 @@ public class FileEncrypter {
      */
     public static String TimeFormat(long num) {
         if (num <= 1000) {
-            return ("用时" + (num) + "ms");
+            return ("用时" + num + "ms");
         } else if (num > 1000 && num <= 60000) {
-            return ("用时" + (num) / 1000 + "s");
-        } else if (num > 60000 && num <= 360000) {
-            return ("用时" + (num) / 60000 + "m");
-        } else if (num > 360000) {
-            return ("用时" + (num) / 360000 + "h");
+            return ("用时" + TimeUnit.MILLISECONDS.toSeconds(num) + "s");
+        } else if (num > 60000 && num <3600000) {
+            long min = TimeUnit.MILLISECONDS.toMinutes(num);
+            long sec = TimeUnit.MILLISECONDS.toSeconds(num)-min*60;
+            return ("用时" + min  + "m" + sec + "s");
+        } else if (num >= 3600000) {
+            long hour = TimeUnit.MILLISECONDS.toHours(num);
+            long min = TimeUnit.MILLISECONDS.toMinutes(num) - hour*60;
+            long sec = TimeUnit.MILLISECONDS.toSeconds(num)- hour*3600 - min*60;
+            return ("用时" + hour + "h" + min + "m" + sec + "s");
         }
         return "";
     }
