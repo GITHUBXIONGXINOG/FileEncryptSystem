@@ -92,7 +92,7 @@ public class FileEncrypter {
                     methodName = "SM4";
                     break;
                 case 3:
-                    methodName = "ECC";
+                    methodName = "RSA";
                     break;
             }
             //拼接文件名
@@ -119,8 +119,8 @@ public class FileEncrypter {
                     consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
                     break;
                 case 3:
-                    EncryptECC encryptECC = new EncryptECC(0, key, parentPath, fileName);
-                    ECCFileOp(encryptFilePath, newPath, fileName, 0, encryptECC);
+                    EncryptRSA encryptRSA = new EncryptRSA(0, key, parentPath, fileName);
+                    RSAFileOp(encryptFilePath, newPath, fileName, 0, encryptRSA);
                     consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
                     break;
             }
@@ -182,10 +182,10 @@ public class FileEncrypter {
                     }
                     break;
                 case 3:
-                    EncryptECC encryptECC = new EncryptECC(1, key, parentPath, fileName);
-                    if (encryptECC.status == true) {
-                        int resECCFileOp = ECCFileOp(decryptFilePath, newPath, fileName, 1, encryptECC);
-                        if (resECCFileOp == 0) {
+                    EncryptRSA encryptRSA = new EncryptRSA(1, key, newPath, fileName);
+                    if (encryptRSA.status == true) {
+                        int resRSAFileOp = RSAFileOp(decryptFilePath, newPath, fileName, 1, encryptRSA);
+                        if (resRSAFileOp == 0) {
                             System.gc();
                             outFile.delete();
                             print("文件解密失败×");
@@ -720,21 +720,21 @@ public class FileEncrypter {
         return 1;
     }
 
-    private int ECC_FLAG = 0;
+    private int RSA_FLAG = 0;
 
-    //ECC文件操作
-    private int ECCFileOp(String encryptPath, String newPath, String fileName, int method, EncryptECC encryptECC) {
+    //RSA文件操作
+    private int RSAFileOp(String encryptPath, String newPath, String fileName, int method, EncryptRSA encryptRSA) {
         try {
             //加密
             if (method == 0) {
-                print("正在使用ECC加密 >>>     ");
+                print("正在使用RSA加密 >>>     ");
                 end = consoleArea.getLineEndOffset(consoleArea.getLineCount() - 2) - 2;
                 start = end - 4;
                 //文件校验
-                if (ECC_ENCRYPT(encryptPath, newPath, fileName, encryptECC) == 1) {
+                if (RSA_ENCRYPT(encryptPath, newPath, fileName, encryptRSA) == 1) {
                     print("文件加密成功√");
                     //保存私钥
-                    encryptECC.savePriveKey();
+                    encryptRSA.savePriveKey();
                     File file = new File(encryptPath);
                     while (file.exists()) {
                         System.gc();
@@ -744,10 +744,10 @@ public class FileEncrypter {
                     return 1;
                 }
             } else {//解密
-                print("正在使用ECC解密 >>>    ");
+                print("正在使用RSA解密 >>>    ");
                 end = consoleArea.getLineEndOffset(consoleArea.getLineCount() - 2) - 2;
                 start = end - 4;
-                if (ECC_DECRYPT(encryptPath, newPath, encryptECC) == 1) {
+                if (RSA_DECRYPT(encryptPath, newPath, encryptRSA) == 1) {
                     print("文件解密成功√");
                     return 1;
                 } else {
@@ -762,15 +762,15 @@ public class FileEncrypter {
     }
 
     /**
-     * ECC加密
+     * RSA加密
      *
      * @param encryptPath 加密文件地址
      * @param newPath     输出文件地址
      * @param fileName    文件名字
-     * @param encryptECC  ecc实例对象
+     * @param encryptRSA  RSA实例对象
      * @return
      */
-    private int ECC_ENCRYPT(String encryptPath, String newPath, String fileName, EncryptECC encryptECC) {
+    private int RSA_ENCRYPT(String encryptPath, String newPath, String fileName, EncryptRSA encryptRSA) {
         try {
             FileInputStream is = new FileInputStream(encryptPath);
             OutputStream out = new FileOutputStream(newPath);
@@ -780,53 +780,32 @@ public class FileEncrypter {
             //获取文件长度
             double fileLen = f.length();
             //分组加密次数
-            int allTime = (int) Math.ceil((fileLen / 1024));
+            int allTime = (int) Math.ceil((fileLen / 117));
             int nTime = allTime / 100;
 
             //计算文件MD5
             String fileMd5 = MD5Util.md5HashCode(encryptPath);
             //获取文件MD5信息的加密
-            byte[] enMD5 = encryptECC.encrypt(fileMd5.getBytes());
-            //MD5加密的长度
-            String len = String.valueOf(enMD5.length);
-            //88位
-            byte[] byteMD5Len = encryptECC.encrypt(len.getBytes());
-            //写入MD5长度
-            out.write(byteMD5Len);
-            out.flush();
+            byte[] enMD5 = encryptRSA.encrypt(fileMd5.getBytes());
             //写入MD5信息
             out.write(enMD5);
             out.flush();
 
             //加密文件名
-            byte[] encryptFileName = encryptECC.encrypt(fileName.getBytes());
-            //获取加密后的文件名长度
-            int fileNameLen = encryptFileName.length;
-//            String strLen = fileNameLen+"";
-            byte[] byteLen = intToByteArray(fileNameLen);
-            //存入名字长度88
-            byte[] lenByte = encryptECC.encrypt(byteLen);
-//            byte[] len88Byte = new byte[88];
-//            int lenByteLen = lenByte.length;
-//            if (lenByteLen<88){
-//                System.arraycopy(lenByte,0,len88Byte,0,lenByteLen);
-//            }
-//            byte[] lenByte = new byte[1];
-//            lenByte[0] = Base64Decoder.decode(new );
-            out.write(lenByte);
+            byte[] encryptFileName = encryptRSA.encrypt(fileName.getBytes());
             //写入文件信息
             out.write(encryptFileName);
 
 
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[117];
             int n = 0;
             while ((r = is.read(buffer)) > 0) {
 
 
                 byte[] temp = new byte[r];
                 System.arraycopy(buffer, 0, temp, 0, r);
-                //使用aes加密
-                byte[] res = encryptECC.encrypt(temp);
+                //使用rea加密
+                byte[] res = encryptRSA.encrypt(temp);
                 out.write(res);
                 out.flush();
                 if (nTime != 0 && n % nTime == 0) {
@@ -837,16 +816,16 @@ public class FileEncrypter {
                         }
                     }
                 }
-                if (nTime == 0 || r < 512) {
+                if (nTime == 0 || r < 117) {
                     printProgress(100);
                 }
                 n++;
 
             }
-            ECC_FLAG = 1;
+            RSA_FLAG = 1;
             printProgress(100);
-            encryptECC.changeCipherMode();
-            ECC_DECRYPT(newPath, f.getParent(), encryptECC);
+            encryptRSA.changeCipherMode();
+            RSA_DECRYPT(newPath, f.getParent(), encryptRSA);
         } catch (Exception e) {
             System.out.println(e);
             return 0;
@@ -869,8 +848,8 @@ public class FileEncrypter {
         return result;
     }
 
-    //ECC解密
-    private int ECC_DECRYPT(String encryptPath, String newPath, EncryptECC encryptECC) {
+    //RSA解密
+    private int RSA_DECRYPT(String encryptPath, String newPath, EncryptRSA encryptRSA) {
         try {
             FileInputStream is = new FileInputStream(encryptPath);
             OutputStream out = null;
@@ -880,38 +859,24 @@ public class FileEncrypter {
             //获取文件长度
             double fileLen = f.length();
             //分组加密次数
-            int allTime = (int) Math.ceil((fileLen / 1024));
+            int allTime = (int) Math.ceil((fileLen / 117));
             int nTime = allTime / 100;
-            //读取保存的md5长度
-            byte[] md5LenBuffer = new byte[88];
-            is.read(md5LenBuffer);
-
-            int md5len = Integer.parseInt(new String(encryptECC.decrypt(md5LenBuffer)));
 
 
-            byte[] md5Buffer = new byte[md5len];
-            byte[] buffer = new byte[1109];
+
+            byte[] md5Buffer = new byte[128];
+            byte[] buffer = new byte[128];
 
 
             is.read(md5Buffer);
-            saveMD5 = new String(encryptECC.decrypt(md5Buffer));
-
-            byte[] fileNameLen = new byte[89];
-            //读取保存的文件名长度信息
-            is.read(fileNameLen);
-
-            byte[] resNameLen = encryptECC.decrypt(fileNameLen);
-
-//            saveFileNameLen = new String(encryptECC.decrypt(fileNameLen));
-            int intFileNameLen = resNameLen[3];
-
+            saveMD5 = new String(encryptRSA.decrypt(md5Buffer));
 
             //读取保存的文件名
-            byte[] fileName = new byte[intFileNameLen];
+            byte[] fileName = new byte[128];
             is.read(fileName);
-            saveFileName = new String(encryptECC.decrypt(fileName));
+            saveFileName = new String(encryptRSA.decrypt(fileName));
 
-            if (ECC_FLAG == 0) {//直接解压
+            if (RSA_FLAG == 0) {//直接解压
                 out = new FileOutputStream(newPath + "\\" + saveFileName);
             } else {//校验
                 out = new FileOutputStream(encryptPath + "_TEMP");
@@ -924,8 +889,8 @@ public class FileEncrypter {
             while ((r = is.read(buffer)) > 0) {
                 byte[] temp = new byte[r];
                 System.arraycopy(buffer, 0, temp, 0, r);
-                //使用aes解密
-                byte[] res = encryptECC.decrypt(temp);
+                //使用rsa解密
+                byte[] res = encryptRSA.decrypt(temp);
                 out.write(res);
                 out.flush();
                 if (nTime != 0 && n % nTime == 0) {
@@ -944,7 +909,7 @@ public class FileEncrypter {
             is.close();
             out.close();
             printProgress(100);
-            if (ECC_FLAG == 0) {
+            if (RSA_FLAG == 0) {
                 print("解密操作完成√");
                 print("正在比对文件MD5...");
                 print("文件保存MD5: " + saveMD5);

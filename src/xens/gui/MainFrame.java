@@ -28,7 +28,7 @@ public class MainFrame extends JFrame implements ActionListener{
     //创建解密文件选择按钮
     JButton btnDecryptFileChooser = new JButton("...");
     //创建加密解密方法数组
-    String []methodList = {"DES","AES","SM4","ECC"};
+    String []methodList = {"DES","AES","SM4","RSA"};
     //创建加密方法下拉选择框
     JComboBox encryptMethod = new JComboBox<String>(methodList);
     //创建解密方法下拉选择框
