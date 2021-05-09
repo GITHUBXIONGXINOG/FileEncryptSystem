@@ -225,7 +225,9 @@ public class FileEncrypter {
         if (num <= 1000) {
             return ("用时" + num + "ms");
         } else if (num > 1000 && num <= 60000) {
-            return ("用时" + TimeUnit.MILLISECONDS.toSeconds(num) + "s");
+            long sec = TimeUnit.MILLISECONDS.toSeconds(num);
+            long ms = num - sec*1000;
+            return ("用时" + sec + "s" + ms + "ms");
         } else if (num > 60000 && num <3600000) {
             long min = TimeUnit.MILLISECONDS.toMinutes(num);
             long sec = TimeUnit.MILLISECONDS.toSeconds(num)-min*60;
@@ -328,7 +330,6 @@ public class FileEncrypter {
             int r = 0;
             InputStream is = new FileInputStream(encryptPath);
             OutputStream out = new FileOutputStream(newPath);
-            double progress = 0, sum = 0;
             File f = new File(encryptPath);
             //获取文件长度
             double fileLen = f.length();
@@ -401,7 +402,6 @@ public class FileEncrypter {
         try {
             InputStream is = new FileInputStream(encryptPath);
             OutputStream out = null;
-            double progress = 0, sum = 0;
             File f = new File(encryptPath);
             //获取文件长度
             double fileLen = f.length();
@@ -583,8 +583,6 @@ public class FileEncrypter {
             byte[] buffer = new byte[1024];
             int n = 0;
             while ((r = is.read(buffer)) > 0) {
-
-
                 byte[] temp = new byte[r];
                 System.arraycopy(buffer, 0, temp, 0, r);
                 //使用aes加密
@@ -605,6 +603,7 @@ public class FileEncrypter {
                 n++;
 
             }
+            printProgress(100);
             SM4_FLAG = 1;
             SM4_DECRYPT(newPath, f.getParent(), encrySM4);
         } catch (Exception e) {
