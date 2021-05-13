@@ -146,17 +146,20 @@ public class MainFrame extends JFrame implements ActionListener{
                     //添加到文本框
                     encryptFilePath.setText(filepath);
                     int len = pathList.length;
-                    if (len==1){
-                        //设置输出文本域
-                        consoleArea.setText("当前选择文件大小约");
-                        File f = new File(filepath);
-                        consoleArea.append(byte2String(f.length()));
-                    }else if (len > 1){
-                        //设置输出文本域
-                        consoleArea.setText("当前选择文件数量为:"+len+"\r\n");
+                    File file = new File(filepath);
+                    if (file.isDirectory()){
+                        consoleArea.setText("当前选择文件夹为:"+filepath+"\r\n");
+                    }else {
+                        if (len==1){
+                            //设置输出文本域
+                            consoleArea.setText("当前选择文件大小约");
+                            File f = new File(filepath);
+                            consoleArea.append(byte2String(f.length()));
+                        }else if (len > 1){
+                            //设置输出文本域
+                            consoleArea.setText("当前选择文件数量为:"+len+"\r\n");
+                        }
                     }
-
-
                     return true;
                 }
                 catch (Exception e) {
@@ -175,8 +178,6 @@ public class MainFrame extends JFrame implements ActionListener{
                 return false;
             }
         });
-//        encryptFilePath.setBorder(BorderFactory.createLineBorder(Color.red));
-//
         //添加文件地址文本框到窗口
         this.add(encryptFilePath);
 
@@ -276,14 +277,19 @@ public class MainFrame extends JFrame implements ActionListener{
                     decryptFilePath.setText(filepath);
                     String[] pathList = filepath.replace(", ",",").split(",");
                     int len = pathList.length;
-                    if (len==1){
-                        //设置输出文本域
-                        consoleArea.setText("当前选择文件大小约");
-                        File f = new File(filepath);
-                        consoleArea.append(byte2String(f.length()));
-                    }else if (len > 1){
-                        //设置输出文本域
-                        consoleArea.setText("当前选择文件数量为:"+len+"\r\n");
+                    File file = new File(filepath);
+                    if (file.isDirectory()){
+                        consoleArea.setText("当前选择文件夹为:"+filepath+"\r\n");
+                    }else {
+                        if (len==1){
+                            //设置输出文本域
+                            consoleArea.setText("当前选择文件大小约");
+                            File f = new File(filepath);
+                            consoleArea.append(byte2String(f.length()));
+                        }else if (len > 1){
+                            //设置输出文本域
+                            consoleArea.setText("当前选择文件数量为:"+len+"\r\n");
+                        }
                     }
                     return true;
                 }

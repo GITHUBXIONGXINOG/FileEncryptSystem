@@ -6,7 +6,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static xens.file.FileEncrypter.TimeFormat;
@@ -36,10 +39,24 @@ public class EncryptThread extends Thread {
     public void run() {
         //获取文件加密路径
         String EncryptPath = encryptFilePath.getText();
-        //将文件路径转为数组数组
-        String[] pathList = EncryptPath.split(",");
+        //利用当前路径创建文件对象
+        File f = new File(EncryptPath);
+        //创建文件名字
+        List<String> fileNames = new ArrayList<String>();
+        String[] pathList = new String[0];
+        int listLen = 0;
+        //判断是否存在目录
+        if (f.isDirectory()){
+            findFileList(new File(EncryptPath),fileNames);
+        }else {
+            //将文件路径转为数组数组
+            fileNames = Arrays.asList(EncryptPath.split(","));
+        }
         //获取数组长度
-        int listLen = pathList.length;
+        listLen = fileNames.size();
+
+
+
         //成功个数
         int successNum = 0;
         //失败个数
@@ -48,7 +65,8 @@ public class EncryptThread extends Thread {
         Date start = new Date();
         for (int i = 0; i < listLen; i++) {
             final int index = i;
-            final String path = pathList[index].trim();
+//            final String path = pathList[index].trim();
+            final String path = fileNames.get(index).trim();
 
             //创建文件类
             File file = new File(path);
@@ -97,5 +115,19 @@ public class EncryptThread extends Thread {
         //设置按钮可用
         btnEncrypt.setEnabled(true);
         btnDecrypt.setEnabled(true);
+    }
+    public static void findFileList(File fileDir, List<String> fileNames) {
+        if (!fileDir.exists() || !fileDir.isDirectory()) {// 判断是否存在目录
+            return;
+        }
+        String[] files = fileDir.list();// 读取目录下的所有目录文件信息
+        for (int i = 0; i < files.length; i++) {// 循环，添加文件名或回调自身
+            File file = new File(fileDir, files[i]);
+            if (file.isFile()) {// 如果文件
+                fileNames.add(fileDir + "\\" + file.getName());// 添加文件全路径名
+            } else {// 如果是目录
+                findFileList(file, fileNames);// 回调自身继续查询
+            }
+        }
     }
 }
