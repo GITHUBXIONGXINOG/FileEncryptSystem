@@ -824,28 +824,13 @@ public class FileEncrypter {
             }
             RSA_FLAG = 1;
             printProgress(100);
-            encryptRSA.changeCipherMode();
-            RSA_DECRYPT(newPath, f.getParent(), encryptRSA);
+//            encryptRSA.changeCipherMode();
+//            RSA_DECRYPT(newPath, f.getParent(), encryptRSA);
         } catch (Exception e) {
             System.out.println(e);
             return 0;
         }
         return 1;
-    }
-
-    /**
-     * int到byte[] 由高位到低位
-     *
-     * @param i 需要转换为byte数组的整行值。
-     * @return byte数组
-     */
-    public static byte[] intToByteArray(int i) {
-        byte[] result = new byte[4];
-        result[0] = (byte) ((i >> 24) & 0xFF);
-        result[1] = (byte) ((i >> 16) & 0xFF);
-        result[2] = (byte) ((i >> 8) & 0xFF);
-        result[3] = (byte) (i & 0xFF);
-        return result;
     }
 
     //RSA解密
@@ -901,7 +886,7 @@ public class FileEncrypter {
                         }
                     }
                 }
-                if (nTime == 0 || r < 512) {
+                if (nTime == 0 || r < 117) {
                     printProgress(100);
                 }
                 n++;

@@ -55,10 +55,6 @@ public class EncryptRSA {
                 cipher.init(Cipher.ENCRYPT_MODE, pubKey);
             } else {//解密
                 try {
-//                    String realPK = key.replaceAll( "-----END PRIVATE KEY-----", "") .replaceAll( "-----BEGIN PRIVATE KEY-----", "").replaceAll( " \n ", "");
-//                    realPK = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAIXC84p8fjkbTOLTv4p23Ol5ueMl9n4NVvyT2+/eqXMMtIqIJ8UQxeAiEYvvdJ1sVCgK9Z83INlj6xGOkJkj8Xu7SGunF+Wn7CKSeav4cMxbtBUJvXRBl1TGdggyVoCPWV5qywzGWX5PBvAPBqzxGw01ZvpXf7ZZY18ozVZ7vNszAgMBAAECgYBmtBlq68u+7UdLomofVsSoP96Kmkt43aU8qgrlUoGo5Mh61bAzj31faskuON3BQbwcQs31Qc7nG+ERyfUcoIx443Od1c3IRPihfWtHtjVV+TejXYm74eXK7zAZ9dSc0NxiZd1IZrgIYH/VJU8kfDn7O2oATD6/H4H/d2TBVfPUgQJBAN668Uv2pzHK1Cy4H8IhRMmg+qyzlEMhakE68J1+Zb3Rt2UYIUlX0y4sEo/OaXO19U4y70QnSn3uR+wBFJdVVt0CQQCZvedh/VtYFtqy23zmzH8cym5XRiTMZETEQkpDSiGgznP5PxkNKXoqAuKEfSim1bYyY677QZJeLbWCx5K/lfFPAkBMA+NceKbhUIcPaBu2pqISanWDQZrFOn9IGfSK29ufaBa+UvjxTh8N8A65s8m7qws4kBum1/4NcqhrPIcpiv+lAkBkCjuG+sq2fmCe483ZjRXlkR/NsHn/eft5Tb1vHczWC6FRfap6cxPoRGpLVfne3c+p6E2Tdy6cE9g5mk22VwZnAkAQ93bfTeWte1JvvSLvd6cu3TAZ+GFczkt+v6x4u/hLc8VdGLprzfV07gVR43qxavvGVq2OQ7qCyqp0DI1ps1Q5";
-//                    String strKey = key.trim();
-//                    System.out.println(strKey.equals(realPK));
                     byte[] decoded = Base64.getDecoder().decode(key.trim());
                     System.out.println(decoded);
                     priKey = (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(decoded));
