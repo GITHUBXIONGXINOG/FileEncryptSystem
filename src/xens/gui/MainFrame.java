@@ -2,6 +2,7 @@ package xens.gui;
 
 import xens.gui.thread.DecryptThread;
 import xens.gui.thread.EncryptThread;
+import xens.gui.thread.WatchEncryptThread;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -541,10 +542,22 @@ public class MainFrame extends JFrame implements ActionListener{
                 //创建新的加密线程,并传入对应的信息,使用start()调用新线程
                 new DecryptThread(this,btnEncrypt,btnDecrypt,decryptFilePath,decryptKey,decryptMethod,consoleArea).start();
 
-        } if(watchEncrypt.isSelected()){
-            consoleArea.append("as");
-        } if(watchDecrypt.isSelected()){
-            consoleArea.append("de");
+        }
+        if(watchEncrypt.isSelected()){
+            consoleArea.append("\r\n监视文件夹");
+            new WatchEncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
+
+        }else {
+            consoleArea.append("\r\n取消监视文件夹");
+
+        }
+
+
+        if(watchDecrypt.isSelected()){
+            consoleArea.append("\r\n监视解密文件夹");
+        }else {
+            consoleArea.append("\r\n取消监视解密文件夹");
+
         }
     }
 
