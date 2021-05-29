@@ -1,10 +1,16 @@
 package xens.gui.thread;
 
+import cn.hutool.core.io.watch.SimpleWatcher;
+import cn.hutool.core.io.watch.WatchMonitor;
+import cn.hutool.core.io.watch.Watcher;
+import cn.hutool.core.lang.Console;
 import xens.file.FileEncrypter;
 import xens.file.FileList;
 
 import javax.swing.*;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -56,6 +62,61 @@ public class EncryptThread extends Thread {
         int successNum = 0;
         //失败个数
         int failNum = 0;
+
+//        WatchMonitor.createAll(f, new SimpleWatcher(){
+//            @Override
+//            public void onModify(WatchEvent<?> event, Path currentPath) {
+//                Console.log("EVENT modify");
+//                consoleArea.append(event.context().toString());
+//                consoleArea.append(currentPath.toString());
+//                consoleArea.append("文件修改!");
+//            }
+//        }).start();
+//
+//        //这里只监听文件或目录的修改事件
+//        WatchMonitor watchMonitor = WatchMonitor.create(f, WatchMonitor.ENTRY_MODIFY);
+//        watchMonitor.setWatcher(new Watcher(){
+//            @Override
+//            public void onCreate(WatchEvent<?> event, Path currentPath) {
+//                Object obj = event.context();
+//
+//                consoleArea.append("\r\n当前创建路径:"+currentPath.toString());
+//                consoleArea.append("\r\n当前创建文件:"+obj.toString());
+//
+////                Console.log("创建：{}-> {}", currentPath, obj);
+//            }
+//
+//            @Override
+//            public void onModify(WatchEvent<?> event, Path currentPath) {
+//                Object obj = event.context();
+//                consoleArea.append("\r\n当前修改路径:"+currentPath.toString());
+//                consoleArea.append("\r\n当前修改文件:"+obj.toString());
+////                Console.log("修改：{}-> {}", currentPath, obj);
+//            }
+//
+//            @Override
+//            public void onDelete(WatchEvent<?> event, Path currentPath) {
+//                Object obj = event.context();
+//                consoleArea.append("\r\n当前删除路径:"+currentPath.toString());
+//                consoleArea.append("\r\n当前删除文件:"+obj.toString());
+////                Console.log("删除：{}-> {}", currentPath, obj);
+//            }
+//
+//            @Override
+//            public void onOverflow(WatchEvent<?> event, Path currentPath) {
+//                Object obj = event.context();
+//                consoleArea.append("\r\n当前重写路径:"+currentPath.toString());
+//                consoleArea.append("\r\n当前重写文件:"+obj.toString());
+////                Console.log("Overflow：{}-> {}", currentPath, obj);
+//            }
+//        });
+//
+////设置监听目录的最大深入，目录层级大于制定层级的变更将不被监听，默认只监听当前层级目录
+//        watchMonitor.setMaxDepth(3);
+////启动监听
+//        watchMonitor.start();
+
+
 
         Date start = new Date();
         for (int i = 0; i < listLen; i++) {

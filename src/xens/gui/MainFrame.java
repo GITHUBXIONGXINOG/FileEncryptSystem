@@ -47,6 +47,10 @@ public class MainFrame extends JFrame implements ActionListener{
     Boolean inputEnPassword = false;
     //创建解密密钥输入标识
     Boolean inputDePassword = false;
+    //创建监视加密单选框
+    JRadioButton watchEncrypt = new JRadioButton("监视加密文件");
+    //创建监视解密单选框
+    JRadioButton watchDecrypt = new JRadioButton("监视解密文件");
     //创建主函数
     public static void main(String[] args){
         //创建窗口类实例
@@ -227,7 +231,9 @@ public class MainFrame extends JFrame implements ActionListener{
 //        btnEncrypt.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加加密按钮到窗口
         this.add(btnEncrypt);
-
+        //单选加密监视按钮
+        watchEncrypt.addActionListener(this);
+        this.add(watchEncrypt);
 
         //创建加密行占位组件标签3
         JLabel label3 = new JLabel();
@@ -412,6 +418,9 @@ public class MainFrame extends JFrame implements ActionListener{
         //添加解锁按钮到窗口
         this.add(btnDecrypt);
 
+        //单选加密监视按钮
+        watchDecrypt.addActionListener(this);
+        this.add(watchDecrypt);
         //创建解密组件占位标签4
         JLabel label5 = new JLabel();
         //设置标签大小
@@ -532,6 +541,10 @@ public class MainFrame extends JFrame implements ActionListener{
                 //创建新的加密线程,并传入对应的信息,使用start()调用新线程
                 new DecryptThread(this,btnEncrypt,btnDecrypt,decryptFilePath,decryptKey,decryptMethod,consoleArea).start();
 
+        } if(watchEncrypt.isSelected()){
+            consoleArea.append("as");
+        } if(watchDecrypt.isSelected()){
+            consoleArea.append("de");
         }
     }
 
