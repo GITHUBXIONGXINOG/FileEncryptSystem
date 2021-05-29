@@ -113,8 +113,6 @@ public class EncryptDES {
         InputStream is = new FileInputStream(EncryptPath);
         OutputStream out = new FileOutputStream(outPath);
         CipherInputStream cis = new CipherInputStream(is, cipher);
-
-
         File f = new File(EncryptPath);
         //获取文件长度
         double fileLen = f.length();

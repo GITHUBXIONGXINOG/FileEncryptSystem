@@ -16,7 +16,7 @@ import java.io.File;
 import java.net.URL;
 
 
-public class MainFrame extends JFrame implements ActionListener{
+public class MainFrame extends JFrame implements ActionListener {
     //使用serialVersionUID序列化实体类来判断版本一致,默认是1L
     private static final long serialVersionUID = 1L;
     //创建加密按钮
@@ -28,7 +28,7 @@ public class MainFrame extends JFrame implements ActionListener{
     //创建解密文件选择按钮
     JButton btnDecryptFileChooser = new JButton("...");
     //创建加密解密方法数组
-    String []methodList = {"DES","AES","SM4","RSA"};
+    String[] methodList = {"DES", "AES", "SM4", "RSA"};
     //创建加密方法下拉选择框
     JComboBox encryptMethod = new JComboBox<String>(methodList);
     //创建解密方法下拉选择框
@@ -42,24 +42,26 @@ public class MainFrame extends JFrame implements ActionListener{
     //创建解密密钥输入文本框
     JTextField decryptKey = new JTextField();
     //创建文本输出域
-    JTextArea consoleArea = new JTextArea(10,76);
+    JTextArea consoleArea = new JTextArea(10, 76);
     //创建加密密钥输入标识
     Boolean inputEnPassword = false;
     //创建解密密钥输入标识
     Boolean inputDePassword = false;
+
     //创建主函数
-    public static void main(String[] args){
+    public static void main(String[] args) {
         //创建窗口类实例
         MainFrame mainFrame = new MainFrame();
         //窗口实例化
         mainFrame.Init();
     }
+
     //窗口初始化
-    public void Init(){
+    public void Init() {
         //设置窗口名称
         this.setTitle("文件加密系统");
         //设置窗口大小
-        this.setSize(860,530);
+        this.setSize(860, 530);
         //设置窗口不能被用户调整大小
         this.setResizable(false);
         // 设置窗口相对于指定组件的位置,设置为null则窗口位于屏幕中央,
@@ -90,9 +92,9 @@ public class MainFrame extends JFrame implements ActionListener{
         URL titleURL = this.getClass().getResource("/resources/title.png");
         ImageIcon titleImage = new ImageIcon(titleURL);
         //创建指定图片和水平方向对齐的标签
-        JLabel titleLabel = new JLabel(titleImage,SwingConstants.LEFT);
+        JLabel titleLabel = new JLabel(titleImage, SwingConstants.LEFT);
         //设置标签大小
-        titleLabel.setPreferredSize(new Dimension(380,90));
+        titleLabel.setPreferredSize(new Dimension(380, 90));
 //        titleLabel.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加title标签到窗口
         this.add(titleLabel);
@@ -115,7 +117,7 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //加密文件标签
         JLabel encryptLabel = new JLabel("加密文件: ");
-        encryptLabel.setFont(new Font("宋体",Font.BOLD,16));
+        encryptLabel.setFont(new Font("宋体", Font.BOLD, 16));
         //设置标签大小
         encryptLabel.setPreferredSize(new Dimension(90, 30));
 //        encryptLabel.setBorder(BorderFactory.createLineBorder(Color.red));
@@ -124,10 +126,11 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //加密文件地址文本框
         encryptFilePath.setPreferredSize(new Dimension(220, 30));
-        encryptFilePath.addFocusListener(new JTextFieldHintListener(encryptFilePath,"拖拽文件或点击...按钮选择文件"));
+        encryptFilePath.addFocusListener(new JTextFieldHintListener(encryptFilePath, "拖拽文件或点击...按钮选择文件"));
         //添加拖拽
-        encryptFilePath.setTransferHandler(new TransferHandler(){
+        encryptFilePath.setTransferHandler(new TransferHandler() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public boolean importData(JComponent comp, Transferable t) {
                 try {
@@ -142,31 +145,31 @@ public class MainFrame extends JFrame implements ActionListener{
                         filepath = filepath.substring(0, filepath.length() - 1);
                     }
                     System.out.println(filepath);
-                    String[] pathList = filepath.replace(", ",",").split(",");
+                    String[] pathList = filepath.replace(", ", ",").split(",");
                     //添加到文本框
                     encryptFilePath.setText(filepath);
                     int len = pathList.length;
                     File file = new File(filepath);
-                    if (file.isDirectory()){
-                        consoleArea.setText("当前选择文件夹为:"+filepath+"\r\n");
-                    }else {
-                        if (len==1){
+                    if (file.isDirectory()) {
+                        consoleArea.setText("当前选择文件夹为:" + filepath + "\r\n");
+                    } else {
+                        if (len == 1) {
                             //设置输出文本域
                             consoleArea.setText("当前选择文件大小约");
                             File f = new File(filepath);
                             consoleArea.append(byte2String(f.length()));
-                        }else if (len > 1){
+                        } else if (len > 1) {
                             //设置输出文本域
-                            consoleArea.setText("当前选择文件数量为:"+len+"\r\n");
+                            consoleArea.setText("当前选择文件数量为:" + len + "\r\n");
                         }
                     }
                     return true;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return false;
             }
+
             //拖拽文件触发,判断能否被导入
             @Override
             public boolean canImport(JComponent comp, DataFlavor[] flavors) {
@@ -184,16 +187,16 @@ public class MainFrame extends JFrame implements ActionListener{
         //给加密文件选择按钮绑定监听
         btnEncryptFileChooser.addActionListener(this);
         //设置按钮大小
-        btnEncryptFileChooser.setPreferredSize(new Dimension(20,30));
+        btnEncryptFileChooser.setPreferredSize(new Dimension(20, 30));
 //        btnEncryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.black));
         //添加加密文件选择按钮到窗口
         this.add(btnEncryptFileChooser);
 
         //创建加密方法标签
         JLabel method0 = new JLabel("加密方法:");
-        method0.setFont(new Font("宋体",Font.BOLD,16));
+        method0.setFont(new Font("宋体", Font.BOLD, 16));
         //设置标签大小
-        method0.setPreferredSize(new Dimension(90,30));
+        method0.setPreferredSize(new Dimension(90, 30));
 //        method0.setBorder(BorderFactory.createLineBorder(Color.red));
         //将方法标签添加到窗口
         this.add(method0);
@@ -203,18 +206,18 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //创建密钥标签
         JLabel encryptLabel1 = new JLabel("加密密钥: ");
-        encryptLabel1.setFont(new Font("宋体",Font.BOLD,16));
+        encryptLabel1.setFont(new Font("宋体", Font.BOLD, 16));
         //设置密钥标签大小
-        encryptLabel1.setPreferredSize(new Dimension(90,30));
+        encryptLabel1.setPreferredSize(new Dimension(90, 30));
 //        encryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加密钥标签到窗口
         this.add(encryptLabel1);
 
         //创建加密密钥输入标签
-        encryptKey.setPreferredSize(new Dimension(130,30));
+        encryptKey.setPreferredSize(new Dimension(130, 30));
         //设置加密密钥默认文字内容
 //        encryptKey.setText("1234567887654344");
-        encryptKey.addFocusListener(new JTextFieldHintListener(encryptKey,"请输入加密密钥"));
+        encryptKey.addFocusListener(new JTextFieldHintListener(encryptKey, "请输入加密密钥"));
 
 //        encryptKey.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加加密密钥输入标签到窗口
@@ -223,7 +226,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //为加密按钮添加点击事件
         btnEncrypt.addActionListener(this);
         //设置加密按钮的大小
-        btnEncrypt.setPreferredSize(new Dimension(60,30));
+        btnEncrypt.setPreferredSize(new Dimension(60, 30));
 //        btnEncrypt.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加加密按钮到窗口
         this.add(btnEncrypt);
@@ -247,19 +250,20 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //创建解密文件标签
         JLabel password = new JLabel("解密文件:");
-        password.setFont(new Font("宋体",Font.BOLD,16));
+        password.setFont(new Font("宋体", Font.BOLD, 16));
         //设置标签大小
-        password.setPreferredSize(new Dimension(90,30));
+        password.setPreferredSize(new Dimension(90, 30));
 //        password.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加标签到窗口
         this.add(password);
 
         //设置解密文本输入框大小
-        decryptFilePath.setPreferredSize(new Dimension(220,30));
-        decryptFilePath.addFocusListener(new JTextFieldHintListener(decryptFilePath,"拖拽文件或点击...按钮选择文件"));
+        decryptFilePath.setPreferredSize(new Dimension(220, 30));
+        decryptFilePath.addFocusListener(new JTextFieldHintListener(decryptFilePath, "拖拽文件或点击...按钮选择文件"));
         //添加拖拽
-        decryptFilePath.setTransferHandler(new TransferHandler(){
+        decryptFilePath.setTransferHandler(new TransferHandler() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public boolean importData(JComponent comp, Transferable t) {
                 try {
@@ -275,29 +279,29 @@ public class MainFrame extends JFrame implements ActionListener{
                     }
                     //添加到文本框
                     decryptFilePath.setText(filepath);
-                    String[] pathList = filepath.replace(", ",",").split(",");
+                    String[] pathList = filepath.replace(", ", ",").split(",");
                     int len = pathList.length;
                     File file = new File(filepath);
-                    if (file.isDirectory()){
-                        consoleArea.setText("当前选择文件夹为:"+filepath+"\r\n");
-                    }else {
-                        if (len==1){
+                    if (file.isDirectory()) {
+                        consoleArea.setText("当前选择文件夹为:" + filepath + "\r\n");
+                    } else {
+                        if (len == 1) {
                             //设置输出文本域
                             consoleArea.setText("当前选择文件大小约");
                             File f = new File(filepath);
                             consoleArea.append(byte2String(f.length()));
-                        }else if (len > 1){
+                        } else if (len > 1) {
                             //设置输出文本域
-                            consoleArea.setText("当前选择文件数量为:"+len+"\r\n");
+                            consoleArea.setText("当前选择文件数量为:" + len + "\r\n");
                         }
                     }
                     return true;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return false;
             }
+
             //拖拽文件触发,判断能否被导入
             @Override
             public boolean canImport(JComponent comp, DataFlavor[] flavors) {
@@ -315,16 +319,16 @@ public class MainFrame extends JFrame implements ActionListener{
         //解密文件选择按钮绑定监听
         btnDecryptFileChooser.addActionListener(this);
         //解密文件选择按钮设置大小
-        btnDecryptFileChooser.setPreferredSize(new Dimension(20,30));
+        btnDecryptFileChooser.setPreferredSize(new Dimension(20, 30));
 //        btnDecryptFileChooser.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加到窗口
         this.add(btnDecryptFileChooser);
 
         //创建解密方法标签
         JLabel method1 = new JLabel("解密方法: ");
-        method1.setFont(new Font("宋体",Font.BOLD,16));
+        method1.setFont(new Font("宋体", Font.BOLD, 16));
         //设置标签大小
-        method1.setPreferredSize(new Dimension(90,30));
+        method1.setPreferredSize(new Dimension(90, 30));
 //        method1.setBorder(BorderFactory.createLineBorder(Color.red));
         //将方法标签添加到窗口
         this.add(method1);
@@ -334,9 +338,9 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //创建解密密钥标签
         JLabel decryptLabel1 = new JLabel("解密密钥: ");
-        decryptLabel1.setFont(new Font("宋体",Font.BOLD,16));
+        decryptLabel1.setFont(new Font("宋体", Font.BOLD, 16));
         //设置密钥标签大小
-        decryptLabel1.setPreferredSize(new Dimension(90,30));
+        decryptLabel1.setPreferredSize(new Dimension(90, 30));
 
 //        decryptLabel1.setBorder(BorderFactory.createLineBorder(Color.red));
         //添加密钥标签到窗口
@@ -346,10 +350,11 @@ public class MainFrame extends JFrame implements ActionListener{
         decryptKey.setPreferredSize(new Dimension(130, 30));
         //设置解密密钥,默认内容
 //        decryptKey.setText("1234567887654344");
-        decryptKey.addFocusListener(new JTextFieldHintListener(decryptKey,"请输入解密密钥"));
+        decryptKey.addFocusListener(new JTextFieldHintListener(decryptKey, "请输入解密密钥"));
         //拖拽密钥文件
-        decryptKey.setTransferHandler(new TransferHandler(){
+        decryptKey.setTransferHandler(new TransferHandler() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public boolean importData(JComponent comp, Transferable t) {
                 try {
@@ -364,29 +369,29 @@ public class MainFrame extends JFrame implements ActionListener{
                         filepath = filepath.substring(0, filepath.length() - 1);
                     }
                     System.out.println(filepath);
-                    String[] pathList = filepath.replace(", ",",").split(",");
+                    String[] pathList = filepath.replace(", ", ",").split(",");
                     //添加到文本框
                     decryptKey.setText(filepath);
-                    inputDePassword=true;
+                    inputDePassword = true;
                     int len = pathList.length;
-                    if (len==1){
+                    if (len == 1) {
                         //设置输出文本域
-                        consoleArea.append("当前选择的密钥地址为:"+filepath);
+                        consoleArea.append("当前选择的密钥地址为:" + filepath);
                         File f = new File(filepath);
 
-                    }else if (len > 1){
+                    } else if (len > 1) {
                         consoleArea.append("密钥路径错误:");
 //                        JOptionPane.showMessageDialog(this, "文件路径错误!", "错误",JOptionPane.WARNING_MESSAGE);
                     }
 
 
                     return true;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return false;
             }
+
             //拖拽文件触发,判断能否被导入
             @Override
             public boolean canImport(JComponent comp, DataFlavor[] flavors) {
@@ -406,7 +411,7 @@ public class MainFrame extends JFrame implements ActionListener{
         //给解密按钮添加监听
         btnDecrypt.addActionListener(this);
         //设置解锁按钮大小
-        btnDecrypt.setPreferredSize(new Dimension(60,30));
+        btnDecrypt.setPreferredSize(new Dimension(60, 30));
 //        btnDecrypt.setBorder(BorderFactory.createLineBorder(Color.red));
 
         //添加解锁按钮到窗口
@@ -430,7 +435,7 @@ public class MainFrame extends JFrame implements ActionListener{
 
         //设置输出文本框不可编辑
         consoleArea.setEditable(false);
-        Font font = new Font("宋体",Font.PLAIN,18);
+        Font font = new Font("宋体", Font.PLAIN, 18);
         consoleArea.setFont(font);
         consoleArea.setLineWrap(true);
         //滚动面板
@@ -453,10 +458,11 @@ public class MainFrame extends JFrame implements ActionListener{
         this.setVisible(true);
 
     }
+
     //设置监听事件触发的方法
-    public void actionPerformed(ActionEvent e){
+    public void actionPerformed(ActionEvent e) {
         //当前触发的事件发起者是文件加密选择
-        if (e.getSource() == btnEncryptFileChooser){
+        if (e.getSource() == btnEncryptFileChooser) {
             //创建文件选择器,不指定文件目录,默认为文档目录
             JFileChooser fileChooser = new JFileChooser();
             //设置JFileChooser窗口标题栏中的字符串。
@@ -475,7 +481,7 @@ public class MainFrame extends JFrame implements ActionListener{
                 consoleArea.append(byte2String(f.length()));
 
             }
-        }else if (e.getSource() == btnDecryptFileChooser){ //当前触发的事件发起者是文件解密选择
+        } else if (e.getSource() == btnDecryptFileChooser) { //当前触发的事件发起者是文件解密选择
             //创建文件选择器,不指定文件目录,默认为文档目录
             JFileChooser fileChooser = new JFileChooser();
             //设置JFileChooser窗口标题栏中的字符串。
@@ -492,45 +498,38 @@ public class MainFrame extends JFrame implements ActionListener{
                 //设置输出文本域
                 consoleArea.setText("当前选择文件大小约");
                 consoleArea.append(byte2String(f.length()));
-
             }
-        }else if (e.getSource() == btnEncrypt){//当前触发的事件发起者是文件加密按钮
-                try {
-                    int start = consoleArea.getLineStartOffset(1);
-                    int end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-1);
-                    consoleArea.replaceRange("",start,end);
-                } catch (BadLocationException badLocationException) {
-                    badLocationException.printStackTrace();
-                }
-                //没有输入密钥,清空
-                if (!inputEnPassword){
-                    encryptKey.setText("");
-                }
-                //创建新的加密线程,并传入对应的信息,使用start()调用新线程
-                new EncryptThread(this,btnEncrypt,btnDecrypt,encryptFilePath,encryptKey,encryptMethod,consoleArea).start();
-
-
-        }else if(e.getSource() == btnDecrypt){//当前触发的事件发起者是文件解密按钮
-
-                //将方法选择框选中的加密方法转换为String类型
-                String.valueOf(encryptMethod.getSelectedItem());
-                try {
-                    int start = consoleArea.getLineStartOffset(1);
-                    int end = consoleArea.getLineEndOffset(consoleArea.getLineCount()-1);
-                    consoleArea.replaceRange("",start,end);
-                } catch (BadLocationException badLocationException) {
-                    badLocationException.printStackTrace();
-                }
-               String decryptKeyText =  decryptKey.getText();
+        } else if (e.getSource() == btnEncrypt) {//当前触发的事件发起者是文件加密按钮
+            try {
+                int start = consoleArea.getLineStartOffset(1);
+                int end = consoleArea.getLineEndOffset(consoleArea.getLineCount() - 1);
+                consoleArea.replaceRange("", start, end);
+            } catch (BadLocationException badLocationException) {
+                badLocationException.printStackTrace();
+            }
             //没有输入密钥,清空
-//            if (!inputDePassword){
-//                decryptKey.setText("");
-//            }
-            if (decryptKeyText.equals("请输入解密密钥")){
+            if (!inputEnPassword) {
+                encryptKey.setText("");
+            }
+            //创建新的加密线程,并传入对应的信息,使用start()调用新线程
+            new EncryptThread(this, btnEncrypt, btnDecrypt, encryptFilePath, encryptKey, encryptMethod, consoleArea).start();
+        } else if (e.getSource() == btnDecrypt) {//当前触发的事件发起者是文件解密按钮
+            //将方法选择框选中的加密方法转换为String类型
+            String.valueOf(encryptMethod.getSelectedItem());
+            try {
+                int start = consoleArea.getLineStartOffset(1);
+                int end = consoleArea.getLineEndOffset(consoleArea.getLineCount() - 1);
+                consoleArea.replaceRange("", start, end);
+            } catch (BadLocationException badLocationException) {
+                badLocationException.printStackTrace();
+            }
+            String decryptKeyText = decryptKey.getText();
+            //没有输入密钥,清空
+            if (decryptKeyText.equals("请输入解密密钥")) {
                 decryptKey.setText("");
             }
-                //创建新的加密线程,并传入对应的信息,使用start()调用新线程
-                new DecryptThread(this,btnEncrypt,btnDecrypt,decryptFilePath,decryptKey,decryptMethod,consoleArea).start();
+            //创建新的加密线程,并传入对应的信息,使用start()调用新线程
+            new DecryptThread(this, btnEncrypt, btnDecrypt, decryptFilePath, decryptKey, decryptMethod, consoleArea).start();
 
         }
     }
@@ -539,7 +538,8 @@ public class MainFrame extends JFrame implements ActionListener{
     public class JTextFieldHintListener implements FocusListener {
         private String hintText;
         private JTextField textField;
-        public JTextFieldHintListener(JTextField jTextField,String hintText) {
+
+        public JTextFieldHintListener(JTextField jTextField, String hintText) {
             this.textField = jTextField;
             this.hintText = hintText;
             jTextField.setText(hintText);  //默认直接显示
@@ -549,7 +549,7 @@ public class MainFrame extends JFrame implements ActionListener{
         public void focusGained(FocusEvent e) {
             //获取焦点时，清空提示内容
             String temp = textField.getText();
-            if(temp.equals(hintText)) {
+            if (temp.equals(hintText)) {
                 textField.setText("");
                 textField.setForeground(Color.BLACK);
             }
@@ -559,19 +559,19 @@ public class MainFrame extends JFrame implements ActionListener{
         public void focusLost(FocusEvent e) {
             //失去焦点时，没有输入内容，显示提示内容
             String temp = textField.getText();
-            if(temp.equals("")) {
+            if (temp.equals("")) {
                 textField.setForeground(Color.GRAY);
                 textField.setText(hintText);
-                if (hintText.equals("请输入加密密钥")){
-                    inputEnPassword=false;
-                }else {
-                    inputDePassword=false;
+                if (hintText.equals("请输入加密密钥")) {
+                    inputEnPassword = false;
+                } else {
+                    inputDePassword = false;
                 }
-            }else {
-                if (hintText.equals("请输入加密密钥")){
-                    inputEnPassword=true;
-                }else {
-                    inputDePassword=true;
+            } else {
+                if (hintText.equals("请输入加密密钥")) {
+                    inputEnPassword = true;
+                } else {
+                    inputDePassword = true;
                 }
             }
 
@@ -580,15 +580,15 @@ public class MainFrame extends JFrame implements ActionListener{
     }
 
     //存储单位转换
-    private String byte2String(Long num){
-        if(num < 1024 ){
+    private String byte2String(Long num) {
+        if (num < 1024) {
             return num + "B\r\n";
-        } else if (num >= 1024 && num < Math.pow(1024,2) ){
-            return new java.text.DecimalFormat("#.00").format(num/1024) + "KB\r\n";
-        } else if (num >= Math.pow(1024,2) && num < Math.pow(1024,3)){
-            return new java.text.DecimalFormat("#.00").format(num/Math.pow(1024,2)) + "MB\r\n";
-        } else if (num >= Math.pow(1024,3) ){
-            return new java.text.DecimalFormat("#.00").format(num/Math.pow(1024,3)) + "GB\r\n";
+        } else if (num >= 1024 && num < Math.pow(1024, 2)) {
+            return new java.text.DecimalFormat("#.00").format(num / 1024) + "KB\r\n";
+        } else if (num >= Math.pow(1024, 2) && num < Math.pow(1024, 3)) {
+            return new java.text.DecimalFormat("#.00").format(num / Math.pow(1024, 2)) + "MB\r\n";
+        } else if (num >= Math.pow(1024, 3)) {
+            return new java.text.DecimalFormat("#.00").format(num / Math.pow(1024, 3)) + "GB\r\n";
         }
         return "";
     }

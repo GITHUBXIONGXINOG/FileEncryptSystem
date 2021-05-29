@@ -42,21 +42,20 @@ public class EncryptThread extends Thread {
         //创建文件名字集合
         List<String> fileNames = new ArrayList<String>();
         //判断是否存在目录
-        if (f.isDirectory()){
+        if (f.isDirectory()) {
             //对目录进行遍历,并存入具体文件名到集合中
-            FileList.findFileList(new File(EncryptPath),fileNames);
-        }else {
+            FileList.findFileList(new File(EncryptPath), fileNames);
+        } else {
             //将文件路径转为数组数组
             fileNames = Arrays.asList(EncryptPath.split(","));
         }
         //获取数组长度
-        int  listLen = fileNames.size();
+        int listLen = fileNames.size();
 
         //成功个数
         int successNum = 0;
         //失败个数
         int failNum = 0;
-
         Date start = new Date();
         for (int i = 0; i < listLen; i++) {
             final int index = i;

@@ -18,12 +18,10 @@ public class FileEncrypter {
 
     //创建输出域
     JTextArea consoleArea;
-
     //创建文件加密输出,传入输出内容
     public FileEncrypter(JTextArea consoleArea) {
         this.consoleArea = consoleArea;
     }
-
     //创建打印类
     void print(String str) {
         System.out.println(str);
@@ -34,12 +32,10 @@ public class FileEncrypter {
         consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
 
     }
-
     //输出域行开始
     private int start;
     //输出域行结束
     private int end;
-
     //创建打印进度类
     void printProgress(int num) throws BadLocationException {
         if (consoleArea != null) {
@@ -57,10 +53,12 @@ public class FileEncrypter {
             }
         }
     }
-
     private int index;
     private String parentPath = "";
-
+    private int AES_CHECK_FLAG = 0;
+    private String saveMD5 = "";
+    private String saveFileNameLen = "";
+    private String saveFileName = "";
     /**
      * @param index           第几个文件
      * @param file            当前要加密的文件File
@@ -135,7 +133,6 @@ public class FileEncrypter {
             return 0;//发生错误
         }
     }
-
     public int decrypt(File file, String decryptFilePath, int method, String key) {
         Date start = new Date();
         print("正在解密: " + file.getName());
@@ -144,15 +141,11 @@ public class FileEncrypter {
 
         String[] fileNameArray = decryptFilePath.split("\\\\");
         String fileName = fileNameArray[fileNameArray.length - 1];
-
         File outFile = new File(newPath);
-
         try {
-
             switch (method) {
                 case 0:
                     EncryptDES decryptDES = new EncryptDES(key, consoleArea, index);
-//                    decryptDES.decrypt(decryptPath,key);
                     int resDESFileOp = DESFileOp(decryptFilePath, newPath, fileName, 1, decryptDES);
                     if (resDESFileOp == 0) {
                         System.gc();
@@ -214,36 +207,8 @@ public class FileEncrypter {
 
         }
     }
-
-    /**
-     * 时间格式化
-     *
-     * @param num 传入long格式的时间
-     * @return 返回格式化后的时间
-     */
-    public static String TimeFormat(long num) {
-        if (num <= 1000) {
-            return ("用时" + num + "ms");
-        } else if (num > 1000 && num <= 60000) {
-            long sec = TimeUnit.MILLISECONDS.toSeconds(num);
-            long ms = num - sec*1000;
-            return ("用时" + sec + "s" + ms + "ms");
-        } else if (num > 60000 && num <3600000) {
-            long min = TimeUnit.MILLISECONDS.toMinutes(num);
-            long sec = TimeUnit.MILLISECONDS.toSeconds(num)-min*60;
-            return ("用时" + min  + "m" + sec + "s");
-        } else if (num >= 3600000) {
-            long hour = TimeUnit.MILLISECONDS.toHours(num);
-            long min = TimeUnit.MILLISECONDS.toMinutes(num) - hour*60;
-            long sec = TimeUnit.MILLISECONDS.toSeconds(num)- hour*3600 - min*60;
-            return ("用时" + hour + "h" + min + "m" + sec + "s");
-        }
-        return "";
-    }
-
     //DES文件操作
     private int DESFileOp(String encryptPath, String newPath, String fileName, int method, EncryptDES encryptDES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
-
         String saveMD5;
         if (method == 0) {//加密
             try {
@@ -258,8 +223,7 @@ public class FileEncrypter {
                 System.out.println(e);
                 return 0;
             }
-        }
-        else {//解密
+        } else {//解密
             print("正在使用DES解密 >>> ");
             try {
                 int encryptIndex = encryptDES.decrypt(encryptPath, newPath);
@@ -292,12 +256,6 @@ public class FileEncrypter {
         }
         return 1;
     }
-
-    private int AES_CHECK_FLAG = 0;
-    private String saveMD5 = "";
-    private String saveFileNameLen = "";
-    private String saveFileName = "";
-
     //AES文件操作
     private int AESFileOp(String encryptPath, String newPath, String fileName, int method, EncryptAES encryptAES) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadLocationException {
         if (method == 0) {//加密
@@ -320,10 +278,8 @@ public class FileEncrypter {
         }
         return 1;
     }
-
     //n的次数
     private int nNum = -1;
-
     //AES加密
     private int AES_ENCRYPT(String encryptPath, String newPath, String fileName, EncryptAES encryptAES) {
         try {
@@ -393,7 +349,6 @@ public class FileEncrypter {
 
         return 1;
     }
-
     //AES解密
     private int AES_DECRYPT(int flag, String encryptPath, String newPath, EncryptAES encryptAES) {
         byte[] buffer = new byte[1040];
@@ -506,9 +461,7 @@ public class FileEncrypter {
 
         return 1;
     }
-
     private int SM4_FLAG = 0;
-
     //SM4文件操作
     private int SM4FileOp(String encryptPath, String newPath, String fileName, int method, EncrySM4 encrySM4) {
         try {
@@ -539,7 +492,6 @@ public class FileEncrypter {
 
         return 1;
     }
-
     //SM4加密
     private int SM4_ENCRYPT(String encryptPath, String newPath, String fileName, EncrySM4 encrySM4) {
         try {
@@ -611,7 +563,6 @@ public class FileEncrypter {
         }
         return 1;
     }
-
     //SM4解密
     private int SM4_DECRYPT(String encryptPath, String newPath, EncrySM4 encrySM4) {
         try {
@@ -719,9 +670,7 @@ public class FileEncrypter {
         }
         return 1;
     }
-
     private int RSA_FLAG = 0;
-
     //RSA文件操作
     private int RSAFileOp(String encryptPath, String newPath, String fileName, int method, EncryptRSA encryptRSA) {
         try {
@@ -760,7 +709,6 @@ public class FileEncrypter {
 
         return 1;
     }
-
     /**
      * RSA加密
      *
@@ -832,7 +780,6 @@ public class FileEncrypter {
         }
         return 1;
     }
-
     //RSA解密
     private int RSA_DECRYPT(String encryptPath, String newPath, EncryptRSA encryptRSA) {
         try {
@@ -846,7 +793,6 @@ public class FileEncrypter {
             //分组加密次数
             int allTime = (int) Math.ceil((fileLen / 117));
             int nTime = allTime / 100;
-
 
 
             byte[] md5Buffer = new byte[128];
@@ -929,6 +875,31 @@ public class FileEncrypter {
             return 0;
         }
         return 1;
+    }
+    /**
+     * 时间格式化
+     *
+     * @param num 传入long格式的时间
+     * @return 返回格式化后的时间
+     */
+    public static String TimeFormat(long num) {
+        if (num <= 1000) {
+            return ("用时" + num + "ms");
+        } else if (num > 1000 && num <= 60000) {
+            long sec = TimeUnit.MILLISECONDS.toSeconds(num);
+            long ms = num - sec * 1000;
+            return ("用时" + sec + "s" + ms + "ms");
+        } else if (num > 60000 && num < 3600000) {
+            long min = TimeUnit.MILLISECONDS.toMinutes(num);
+            long sec = TimeUnit.MILLISECONDS.toSeconds(num) - min * 60;
+            return ("用时" + min + "m" + sec + "s");
+        } else if (num >= 3600000) {
+            long hour = TimeUnit.MILLISECONDS.toHours(num);
+            long min = TimeUnit.MILLISECONDS.toMinutes(num) - hour * 60;
+            long sec = TimeUnit.MILLISECONDS.toSeconds(num) - hour * 3600 - min * 60;
+            return ("用时" + hour + "h" + min + "m" + sec + "s");
+        }
+        return "";
     }
 }
 
