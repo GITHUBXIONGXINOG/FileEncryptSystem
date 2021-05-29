@@ -98,6 +98,7 @@ public class DecryptThread extends Thread {
                     if(priKeyPath!=null){
                         File file1 = new File(priKeyPath);
                         if (file1.exists() && file1.isFile()) {
+                            System.gc();
                             file1.delete();
                         }
                     }
